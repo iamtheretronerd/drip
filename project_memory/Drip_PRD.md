@@ -38,7 +38,7 @@
 
 ### 1.1 Purpose
 
-This document defines the product requirements for Drip, a weather-smart wardrobe assistant web application. Drip helps users decide what to wear each day by combining real-time weather data, personal wardrobe inventory, and mood-based input to generate practical, stylish outfit suggestions.
+This document defines the product requirements for Drip, a smart wardrobe assistant web application. Drip helps users decide what to wear each day by combining real-time weather data, personal wardrobe inventory, and mood-based input to generate practical, stylish outfit suggestions.
 
 ### 1.2 Product Vision
 
@@ -97,7 +97,7 @@ Drip eliminates the daily decision fatigue of choosing what to wear. Users uploa
 **Story:** As a fashionista, I want to type in how I'm feeling (e.g., "lazy yet sharp") so the app suggests outfits that match my mood and personal style.
 
 **Acceptance Criteria:**
-- Given the dashboard is loaded, a text input field for mood/context is visible below the weather display.
+- Given the dashboard is loaded, a text input field for mood/context is visible.
 - When the user types a mood (e.g., "coffee date", "main character energy", "just going to the gym") and submits, the outfit engine regenerates with the mood as an additional parameter.
 - The regenerated outfit visibly differs from the previous suggestion (at least 1 item must change, unless the closet is too small).
 - The mood text is stored in the outfit log if the outfit is accepted.
@@ -119,7 +119,8 @@ Drip eliminates the daily decision fatigue of choosing what to wear. Users uploa
 
 **Acceptance Criteria:**
 - The user can upload a photo (JPEG, PNG, or WebP, max 5MB) for each item.
-- The user must provide: name, type (top/bottom/outerwear/shoes/accessory), primary color, warmth rating (1–5), and season suitability (multi-select).
+- - The user must provide: name.
+- The AI will analyze: type (top/bottom/outerwear/dress/shoes/accessory), primary color, warmth rating (1–5), and season suitability (multi-options).
 - Optional fields: formality level, sub-type.
 - The item appears in the closet grid immediately after saving.
 - Validation errors are shown inline (e.g., "Photo is required", "Please select a warmth rating").
@@ -131,8 +132,7 @@ Drip eliminates the daily decision fatigue of choosing what to wear. Users uploa
 **Story:** As a minimalist, I want to see an outfit history calendar so I can track rotation and avoid repeating the same outfit too often.
 
 **Acceptance Criteria:**
-- A monthly calendar view is accessible from the main navigation.
-- Each day with a logged outfit displays a small thumbnail of the outfit.
+- A date picker is accessible from the main navigation.
 - Tapping/clicking a day with a logged outfit expands to show the full outfit details (individual item photos, names, and tags).
 - Days without logged outfits appear empty (no placeholder or error).
 
@@ -148,18 +148,6 @@ Drip eliminates the daily decision fatigue of choosing what to wear. Users uploa
 - Selecting an alternative replaces that item in the outfit card without changing any other pieces.
 - The user can swap multiple pieces independently in the same session.
 
-### US-07: 7-Day Forecast & Future Outfit Generation
-
-**Persona:** All  
-**Story:** As a user, I want to see weather forecasts for the next 7 days and generate outfit suggestions for any future day on demand.
-
-**Acceptance Criteria:**
-- A 7-day forecast bar is visible on the dashboard showing date, weather icon, and high/low temperature for each day.
-- The current day is selected by default.
-- Tapping a future day updates the weather display to that day's forecast and triggers on-demand outfit generation for that day's weather conditions.
-- The outfit is generated fresh each time (not precomputed or cached).
-- The user can accept, swap, or regenerate the future day's outfit using the same controls as the current day.
-
 ### US-08: Onboarding Quiz
 
 **Persona:** All  
@@ -167,7 +155,7 @@ Drip eliminates the daily decision fatigue of choosing what to wear. Users uploa
 
 **Acceptance Criteria:**
 - After account creation, the user is directed to a stepped quiz flow (one question at a time) with a progress indicator.
-- The quiz contains 4–5 questions covering: style preference, typical day/lifestyle, location, weather sensitivity, and outfit priority.
+- The quiz contains 4–5 questions covering: typical day/lifestyle, location, weather sensitivity, and outfit priority.
 - All questions must be answered to proceed (no skipping).
 - Answers are saved to the user profile and are used by the outfit engine for suggestions.
 - The user can edit their quiz answers later from the Profile/Settings page.
@@ -183,17 +171,14 @@ New users complete a brief onboarding sequence after account creation. The quiz 
 
 #### 4.1.1 Authentication
 
-- Email and password registration with JWT-based session management.
+- Email and password registration with supabase authentication (session managed).
 - Password requirements: minimum 8 characters, at least one uppercase letter, one lowercase letter, and one number.
-- JWT tokens stored in HTTP-only cookies. Access token expiry: 15 minutes. Refresh token expiry: 7 days.
-
 #### 4.1.2 Onboarding Quiz (4–5 Questions)
 
 Questions are presented one at a time in a stepped progress flow. Answers are stored in the user profile and feed into the outfit suggestion engine.
 
-1. **Style preference:** Select from visual tiles (e.g., Minimal, Streetwear, Classic, Sporty, Eclectic).
-2. **Typical day:** Multiple choice (e.g., Office/corporate, Campus/school, Remote/WFH, Mixed/varies).
-3. **Location:** Auto-detect via browser geolocation API with manual city entry fallback.
+1. **Typical day:** Multiple choice (e.g., Office/corporate, Campus/school, Remote/WFH, Mixed/varies).
+2. **Location:** Auto-detect via browser geolocation API with manual city entry fallback.
 4. **Weather sensitivity:** Slider or choice (e.g., I run hot / neutral / I get cold easily).
 5. **Outfit priority:** Rank or select (Comfort first, Style first, Weather protection first).
 
@@ -235,7 +220,7 @@ The closet is the user's wardrobe inventory. All outfit suggestions are sourced 
 #### 4.3.1 Adding Items
 
 - Users upload a photo of each clothing item individually.
-- Manual tagging required for each item: type (top, bottom, outerwear, shoes, accessory), color (primary color), warmth rating (1–5 scale), season suitability (spring, summer, fall, winter — multi-select), and name/label (user's own name for the item).
+- Manual tagging required for each item: type (top, bottom, outerwear, shoes, accessory), color (primary color), warmth rating (1–5 scale), season suitability (spring, summer, fall, winter — multi-select), and name/label (user's own name for the item) - All these data will be generated by AI and will be editable by the user.
 - Optional tags: formality level (casual, smart casual, formal), sub-type (e.g., hoodie, blazer, sneakers, boots).
 
 #### 4.3.2 Closet View
@@ -379,261 +364,21 @@ When a user accepts a suggested outfit (or customizes and confirms it), it is lo
 
 ---
 
-## 7. API Specification
 
-### 7.1 Authentication
+## 7. Technical Architecture
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/auth/register` | Create new account (email, password) | No |
-| POST | `/api/auth/login` | Authenticate user, return JWT | No |
-| POST | `/api/auth/logout` | Invalidate refresh token | Yes |
-| POST | `/api/auth/refresh` | Refresh access token | No (refresh token in cookie) |
-| POST | `/api/auth/change-password` | Update password | Yes |
-
-**POST `/api/auth/register`**
-```json
-// Request
-{ "email": "user@example.com", "password": "SecurePass1" }
-
-// Response 201
-{ "user": { "id": "uuid", "email": "user@example.com" }, "accessToken": "jwt..." }
-
-// Response 400
-{ "error": "Email already in use" }
-```
-
-**POST `/api/auth/login`**
-```json
-// Request
-{ "email": "user@example.com", "password": "SecurePass1" }
-
-// Response 200
-{ "user": { "id": "uuid", "email": "user@example.com" }, "accessToken": "jwt..." }
-
-// Response 401
-{ "error": "Invalid email or password" }
-```
-
-### 7.2 Onboarding
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/onboarding` | Save quiz answers | Yes |
-| GET | `/api/onboarding` | Get current quiz answers | Yes |
-| PUT | `/api/onboarding` | Update quiz answers | Yes |
-
-**POST `/api/onboarding`**
-```json
-// Request
-{
-  "style_preference": "minimal",
-  "typical_day": "office",
-  "location": { "city": "New York", "lat": 40.7128, "lon": -74.0060 },
-  "weather_sensitivity": "neutral",
-  "outfit_priority": "comfort"
-}
-
-// Response 201
-{ "message": "Onboarding complete", "onboarding": { ... } }
-```
-
-### 7.3 Clothing Items (Closet)
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/api/closet` | List all items (supports filters via query params) | Yes |
-| GET | `/api/closet/:id` | Get single item | Yes |
-| POST | `/api/closet` | Add new item (multipart form with photo) | Yes |
-| PUT | `/api/closet/:id` | Update item tags/metadata | Yes |
-| DELETE | `/api/closet/:id` | Remove item | Yes |
-
-**POST `/api/closet`**
-```json
-// Request (multipart/form-data)
-{
-  "photo": "<file>",
-  "name": "Blue Oxford Shirt",
-  "type": "top",
-  "color": "blue",
-  "warmth_rating": 3,
-  "seasons": ["spring", "fall"],
-  "formality": "smart_casual",
-  "sub_type": "oxford"
-}
-
-// Response 201
-{
-  "item": {
-    "id": "uuid",
-    "photo_url": "https://storage.example.com/...",
-    "name": "Blue Oxford Shirt",
-    "type": "top",
-    "color": "blue",
-    "warmth_rating": 3,
-    "seasons": ["spring", "fall"],
-    "formality": "smart_casual",
-    "sub_type": "oxford",
-    "times_worn": 0,
-    "last_worn": null,
-    "created_at": "2026-02-21T10:00:00Z"
-  }
-}
-```
-
-**GET `/api/closet?type=top&season=fall&warmth_min=2&warmth_max=4`**
-```json
-// Response 200
-{ "items": [ { ... }, { ... } ], "total": 12 }
-```
-
-### 7.4 Outfit Suggestion
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/outfits/suggest` | Generate outfit suggestion | Yes |
-| POST | `/api/outfits/swap` | Get alternatives for a single piece | Yes |
-
-**POST `/api/outfits/suggest`**
-```json
-// Request
-{
-  "date": "2026-02-21",
-  "mood": "coffee date"
-}
-
-// Response 200
-{
-  "outfit": {
-    "top": { "id": "uuid", "name": "Blue Oxford Shirt", "photo_url": "...", ... },
-    "bottom": { "id": "uuid", "name": "Dark Jeans", "photo_url": "...", ... },
-    "shoes": { "id": "uuid", "name": "Chelsea Boots", "photo_url": "...", ... },
-    "outerwear": { "id": "uuid", "name": "Wool Coat", "photo_url": "...", ... },
-    "accessory": null
-  },
-  "weather": {
-    "temp": 42,
-    "feels_like": 38,
-    "condition": "cloudy",
-    "precipitation_pct": 20,
-    "high": 48,
-    "low": 35
-  },
-  "warnings": []
-}
-```
-
-**POST `/api/outfits/swap`**
-```json
-// Request
-{
-  "category": "top",
-  "current_outfit_item_ids": ["uuid1", "uuid2", "uuid3"],
-  "date": "2026-02-21"
-}
-
-// Response 200
-{
-  "alternatives": [
-    { "id": "uuid", "name": "Gray Henley", "photo_url": "...", "warmth_rating": 3, ... },
-    { "id": "uuid", "name": "White T-Shirt", "photo_url": "...", "warmth_rating": 2, ... }
-  ]
-}
-```
-
-### 7.5 Outfit History
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/outfits/log` | Log an accepted outfit | Yes |
-| GET | `/api/outfits/history?month=2&year=2026` | Get outfit history for a month | Yes |
-| PUT | `/api/outfits/history/:id` | Edit a logged outfit | Yes |
-| DELETE | `/api/outfits/history/:id` | Delete a logged outfit | Yes |
-
-**POST `/api/outfits/log`**
-```json
-// Request
-{
-  "date": "2026-02-21",
-  "item_ids": ["uuid1", "uuid2", "uuid3", "uuid4"],
-  "mood_input": "coffee date",
-  "weather_snapshot": { "temp": 42, "feels_like": 38, "condition": "cloudy", "precipitation_pct": 20 },
-  "was_modified": true
-}
-
-// Response 201
-{ "log": { "id": "uuid", "date": "2026-02-21", ... } }
-```
-
-**GET `/api/outfits/history?month=2&year=2026`**
-```json
-// Response 200
-{
-  "logs": [
-    {
-      "id": "uuid",
-      "date": "2026-02-21",
-      "items": [ { "id": "uuid", "name": "Blue Oxford Shirt", "photo_url": "...", "type": "top" }, ... ],
-      "mood_input": "coffee date",
-      "was_modified": true
-    },
-    ...
-  ]
-}
-```
-
-### 7.6 Weather
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/api/weather?lat=40.71&lon=-74.00` | Get current + 7-day forecast | Yes |
-
-**GET `/api/weather`**
-```json
-// Response 200
-{
-  "current": {
-    "temp": 42,
-    "feels_like": 38,
-    "condition": "cloudy",
-    "precipitation_pct": 20,
-    "icon": "04d"
-  },
-  "daily": [
-    { "date": "2026-02-21", "high": 48, "low": 35, "condition": "cloudy", "precipitation_pct": 20, "icon": "04d" },
-    { "date": "2026-02-22", "high": 52, "low": 38, "condition": "rain", "precipitation_pct": 80, "icon": "10d" },
-    ...
-  ],
-  "cached": false,
-  "last_updated": "2026-02-21T10:30:00Z"
-}
-```
-
-### 7.7 User Profile & Settings
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/api/profile` | Get user profile and settings | Yes |
-| PUT | `/api/profile` | Update profile settings | Yes |
-| DELETE | `/api/profile` | Delete account and all data | Yes |
-
----
-
-## 8. Technical Architecture
-
-### 8.1 Tech Stack
+### 7.1 Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | Next.js (React) with TailwindCSS |
-| Backend / API | Next.js API Routes (serverless functions) |
+| Frontend | React|
+| Backend / API | Supabase|
 | Database | PostgreSQL |
-| ORM | Prisma (type-safe PostgreSQL with Next.js) |
-| Authentication | Custom email/password with JWT (bcrypt for hashing) |
+| Authentication | Supabase Auth |
 | Weather API | OpenWeatherMap Free Tier (1,000 calls/day) |
-| AI / LLM | LLM API for outfit styling (provider TBD — see Dependencies) |
+| AI / LLM | Gemini|
 | Image Storage | Cloud object storage (TBD — see Dependencies) |
-| Hosting | Vercel (natural fit for Next.js) |
+| Hosting | Vercel|
 
 ### 8.2 API Rate Limit Management
 
@@ -714,7 +459,6 @@ If a user exceeds 5 failed login attempts within 15 minutes, temporarily lock th
 Minimum 80% test coverage across the codebase, measured by line coverage. This threshold applies to the entire project, not individual files.
 
 - **Unit tests:** All utility functions, engine logic (filtering, rotation scoring), API route handlers, and data validation.
-- **Integration tests:** API endpoints with database interactions, authentication flows, weather API integration (with mocked external calls), outfit engine end-to-end with test wardrobe data.
 - **End-to-end tests:** Critical user flows — sign up, onboarding quiz, upload first item, receive outfit suggestion, swap a piece, regenerate, log outfit. Use a framework such as Playwright or Cypress.
 
 ### 11.2 CI/CD Pipeline
@@ -737,13 +481,12 @@ Multi-stage pipeline with the following stages:
 
 ### 11.4 Security
 
-- All API routes require authentication (JWT validation) except auth endpoints.
+- Row Level Security from Supabase
 - Input sanitization on all user inputs (mood text, item tags, quiz answers).
-- Rate limiting on auth endpoints (prevent brute force — see Section 10.7).
 - Image upload validation: file type whitelist (JPEG, PNG, WebP), max file size (5MB), server-side validation.
 - Environment variables for all secrets (JWT secret, API keys, database URL). Never committed to version control.
 - HTTPS enforced in production.
-- User data should not be leaked or exposed. Ensure users can only access their own data (row-level authorization checks on all queries).
+- User data should not be leaked or exposed. Ensure users can only access their own data.
 
 ---
 

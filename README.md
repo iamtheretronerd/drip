@@ -1,6 +1,6 @@
 # HW3: Context Engineering — Submission README
 
-**Student:** Hemang Choudhary  
+**Team Members:** Feng Hua Tan, Hemang Murugan
 **GitHub Repository:** [https://github.com/iamtheretronerd/drip](https://github.com/iamtheretronerd/drip)  
 **GitHub Project Board:** [https://github.com/users/iamtheretronerd/projects/1](https://github.com/users/iamtheretronerd/projects/1)  
 **Project:** DRIP — Weather-Smart Wardrobe Assistant

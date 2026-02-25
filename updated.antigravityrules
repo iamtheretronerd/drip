@@ -155,6 +155,7 @@ Typography:
 
 
 **Unit Tests (Vitest):**
+- **Test-Driven Development (TDD):** Write tests *before* writing the implementation code whenever possible.
 - Coverage goal: **≥ 80%** (enforced in CI)
 - Test utilities, hooks, and pure functions
 - Mock external APIs (Supabase, OpenWeatherMap)
@@ -358,6 +359,7 @@ Related to: #3
 
 
 **DO:**
+- Practice Test-Driven Development (TDD): write your tests before implementing features.
 - Use Server Components for data fetching when possible
 - Implement loading.tsx and error.tsx for each route
 - Use `revalidatePath()` after mutations

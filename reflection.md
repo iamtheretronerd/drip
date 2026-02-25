@@ -116,6 +116,8 @@ The Task 3 test revealed several gaps in the initial rules file that informed re
 
 3. **Design System Adherence**: Added stronger language: "Default to the provided Color System... Never use generic browser styling."
 
+4. **Test-Driven Development (TDD)**: Added explicit requirement to practice TDD to ensure test coverage is thoughtfully designed before implementation rather than retrofitted.
+
 ### Planned Additions for Sprint 2
 
 Based on lessons learned, the following rules will be added for Sprint 2 development:

@@ -1,6 +1,6 @@
 # HW3: Context Engineering — Submission README
 
-**Team Members:** Feng Hua Tan, Hemang Murugan
+**Team Members:** Feng Hua Tan, Hemang Murugan  
 **GitHub Repository:** [https://github.com/iamtheretronerd/drip](https://github.com/iamtheretronerd/drip)  
 **GitHub Project Board:** [https://github.com/users/iamtheretronerd/projects/1](https://github.com/users/iamtheretronerd/projects/1)  
 **Project:** DRIP — Weather-Smart Wardrobe Assistant
@@ -62,8 +62,8 @@
 **Rules File Total: 14/14**
 
 **Files:**
-- Primary Rules: [`.antigravityrules`](./.antigravityrules) (474 lines)
-- Enhanced Version: [`updated.antigravityrules`](./updated.antigravityrules) (475 lines)
+- Primary Rules: [`.antigravityrules`](./.antigravityrules) (475 lines)
+- Enhanced Version: [`updated.antigravityrules`](./updated.antigravityrules) (479 lines)
 
 **Key Rules Included:**
 - ✅ Tech stack table with versions

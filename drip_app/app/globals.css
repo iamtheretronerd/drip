@@ -1,0 +1,69 @@
+/* ─── Drip Design Tokens ────────────────────────────────────────────────────── */
+:root {
+  /* Primary */
+  --color-lavender: #9B8FD6;
+  --color-yellow: #F7E24A;
+  --color-red: #D94242;
+
+  /* Secondary */
+  --color-orange: #F5B847;
+  --color-pink: #E8B4A8;
+  --color-black: #1A1A1A;
+  --color-cream: #FDF8F0;
+  --color-deep-blue: #3B4B9E;
+  --color-burgundy: #8B3A3A;
+  --color-olive: #4A5C3E;
+  --color-gray: #6B6B6B;
+  --color-pale-yellow: #FFFACD;
+  --color-deep-purple: #5B4B8A;
+
+  /* Semantic */
+  --color-bg: var(--color-cream);
+  --color-text: var(--color-black);
+  --color-text-muted: var(--color-gray);
+  --color-primary: var(--color-lavender);
+  --color-cta: var(--color-yellow);
+  --color-error: var(--color-red);
+  --color-success: var(--color-olive);
+}
+
+/* ─── Reset ─────────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+video {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+}

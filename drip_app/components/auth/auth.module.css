@@ -1,0 +1,257 @@
+/* ─── Auth Layout ──────────────────────────────────────────────────────────── */
+.authRoot {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #9B8FD6 0%, #7B6FBE 50%, #5B4B8A 100%);
+  padding: 1.5rem;
+}
+
+.authCard {
+  background: #FDF8F0;
+  border-radius: 24px;
+  padding: 3rem 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow:
+    0 25px 50px rgba(91, 75, 138, 0.25),
+    0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ─── Brand ────────────────────────────────────────────────────────────────── */
+.brand {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.brandName {
+  font-family: 'Cooper Black', 'Georgia', serif;
+  font-size: 3rem;
+  font-weight: 900;
+  color: #1A1A1A;
+  line-height: 1;
+  margin: 0;
+  letter-spacing: -1px;
+}
+
+.brandTagline {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.85rem;
+  color: #6B6B6B;
+  margin: 0.5rem 0 0;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Shared Form Elements ─────────────────────────────────────────────────── */
+.formTitle {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0 0 0.35rem;
+  text-align: center;
+}
+
+.formSubtitle {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.9rem;
+  color: #6B6B6B;
+  margin: 0 0 2rem;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.input {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 1rem;
+  color: #1A1A1A;
+  background: #fff;
+  border: 2px solid #E5E0F5;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #9B8FD6;
+  box-shadow: 0 0 0 3px rgba(155, 143, 214, 0.2);
+}
+
+.inputError {
+  border-color: #D94242;
+}
+
+.inputError:focus {
+  border-color: #D94242;
+  box-shadow: 0 0 0 3px rgba(217, 66, 66, 0.15);
+}
+
+.fieldError {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.78rem;
+  color: #D94242;
+  margin: 0;
+}
+
+/* ─── Alert Banners ────────────────────────────────────────────────────────── */
+.errorBanner {
+  background: #FFF0F0;
+  border: 1.5px solid #D94242;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.87rem;
+  color: #D94242;
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+.successBanner {
+  background: #F0FAF5;
+  border: 1.5px solid #4A5C3E;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.87rem;
+  color: #4A5C3E;
+  text-align: center;
+}
+
+/* ─── Submit Button ────────────────────────────────────────────────────────── */
+.submitButton {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #1A1A1A;
+  background: #F7E24A;
+  border: none;
+  border-radius: 12px;
+  padding: 0.875rem 1.5rem;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease;
+  box-shadow: 0 4px 12px rgba(247, 226, 74, 0.4);
+  margin-top: 0.25rem;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #f5d800;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(247, 226, 74, 0.5);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(247, 226, 74, 0.35);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── Footer Link ──────────────────────────────────────────────────────────── */
+.footerText {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.85rem;
+  color: #6B6B6B;
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.footerLink {
+  color: #5B4B8A;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+}
+
+/* ─── Password hint ────────────────────────────────────────────────────────── */
+.passwordHint {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.75rem;
+  color: #6B6B6B;
+  margin: 0;
+}
+
+/* ─── Social Auth ──────────────────────────────────────────────────────────── */
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: #6B6B6B;
+  font-size: 0.8rem;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #E5E0F5;
+}
+
+.divider:not(:empty)::before {
+  margin-right: 1rem;
+}
+
+.divider:not(:empty)::after {
+  margin-left: 1rem;
+}
+
+.googleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1A1A1A;
+  background: #fff;
+  border: 2px solid #E5E0F5;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.googleButton:hover {
+  background: #FDF8F0;
+  border-color: #9B8FD6;
+}
+
+.googleIcon {
+  width: 18px;
+  height: 18px;
+}

@@ -7,42 +7,42 @@ import type { ActionResult } from '@/types';
 
 // ─── Sign Up ──────────────────────────────────────────────────────────────────
 export async function signUp(
-    _prevState: ActionResult,
-    formData: FormData,
+  _prevState: ActionResult,
+  formData: FormData,
 ): Promise<ActionResult> {
-    const raw = {
-        fullName: formData.get('fullName') as string,
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
-    };
+  const raw = {
+    fullName: formData.get('fullName') as string,
+    email: formData.get('email') as string,
+    password: formData.get('password') as string,
+  };
 
-    const parsed = SignUpSchema.safeParse(raw);
-    if (!parsed.success) {
-        const fieldErrors: Record<string, string> = {};
-        for (const [field, messages] of Object.entries(
-            parsed.error.flatten().fieldErrors,
-        )) {
-            if (messages?.[0]) fieldErrors[field] = messages[0];
-        }
-        return { success: false, fieldErrors };
+  const parsed = SignUpSchema.safeParse(raw);
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const [field, messages] of Object.entries(
+      parsed.error.flatten().fieldErrors,
+    )) {
+      if (messages?.[0]) fieldErrors[field] = messages[0];
     }
+    return { success: false, fieldErrors };
+  }
 
-    const supabase = await createClient();
-    if (!supabase) return { success: false, error: 'Database not connected.' };
+  const supabase = await createClient();
+  if (!supabase) return { success: false, error: 'Database not connected.' };
 
-    const { error } = await supabase.auth.signUp({
-        email: parsed.data.email,
-        password: parsed.data.password,
-        options: {
-            data: { full_name: parsed.data.fullName },
-        },
-    });
+  const { error } = await supabase.auth.signUp({
+    email: parsed.data.email,
+    password: parsed.data.password,
+    options: {
+      data: { full_name: parsed.data.fullName },
+    },
+  });
 
-    if (error) {
-        return { success: false, error: error.message };
-    }
+  if (error) {
+    return { success: false, error: error.message };
+  }
 
-    redirect('/dashboard');
+  redirect('/onboarding');
 }
 
 // ─── Login ────────────────────────────────────────────────────────────────────
@@ -69,20 +69,21 @@ export async function login(
     const supabase = await createClient();
     if (!supabase) return { success: false, error: 'Database not connected.' };
 
-    const { error } = await supabase.auth.signInWithPassword({
-        email: parsed.data.email,
-        password: parsed.data.password,
-    });
+  const { data: authData, error } = await supabase.auth.signInWithPassword({
+    email: parsed.data.email,
+    password: parsed.data.password,
+  });
 
-    if (error) {
-        // Generic message to avoid leaking user existence info
-        return {
-            success: false,
-            error: 'Invalid email or password. Please try again.',
-        };
-    }
+  if (error) {
+    // Generic message to avoid leaking user existence info
+    return {
+      success: false,
+      error: 'Invalid email or password. Please try again.',
+    };
+  }
 
-    redirect('/dashboard');
+  // Dashboard will handle onboarding check
+  redirect('/dashboard');
 }
 
 // ─── Logout ───────────────────────────────────────────────────────────────────
@@ -156,9 +157,10 @@ export async function updatePassword(
         password: parsed.data.password,
     });
 
-    if (error) {
-        return { success: false, error: error.message };
-    }
+  if (error) {
+    return { success: false, error: error.message };
+  }
 
-    redirect('/dashboard');
+  // Dashboard will handle onboarding check
+  redirect('/dashboard');
 }

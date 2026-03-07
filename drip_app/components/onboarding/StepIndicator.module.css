@@ -1,0 +1,82 @@
+.stepIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 1rem 0;
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.stepCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #666666;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.stepCircle.active {
+  color: #0a0a0a;
+  background: #ffffff;
+  border-color: #ffffff;
+}
+
+.stepCircle.completed {
+  color: #0a0a0a;
+  background: #ffffff;
+  border-color: #ffffff;
+}
+
+.stepLabel {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 8px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #666666;
+  white-space: nowrap;
+}
+
+.stepLabel.active {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.stepLine {
+  width: 60px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 8px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.stepLine.completed {
+  background: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .stepLine {
+    width: 40px;
+  }
+  
+  .stepLabel {
+    display: none;
+  }
+}

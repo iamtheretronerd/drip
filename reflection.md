@@ -118,8 +118,6 @@ The Task 3 test revealed several gaps in the initial rules file that informed re
 
 4. **Test-Driven Development (TDD)**: Added explicit requirement to practice TDD to ensure test coverage is thoughtfully designed before implementation rather than retrofitted.
 
-5. **Strict Scrum & Git Workflow Enforcement**: Added explicit command to strictly follow the Scrum Branch-per-Issue Workflow and Commit Message format to make sure the AI directly connects its implementation activities back to the GitHub issues.
-
 ### Planned Additions for Sprint 2
 
 Based on lessons learned, the following rules will be added for Sprint 2 development:

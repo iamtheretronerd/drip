@@ -1,0 +1,310 @@
+/* ─── Landing Page Layout ───────────────────────────────────────────────────────── */
+.root {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow-x: hidden;
+  background: #0a0a0a;
+}
+
+.background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+.background canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: 
+    radial-gradient(ellipse at top, rgba(10, 10, 10, 0.3) 0%, rgba(10, 10, 10, 0.8) 50%, rgba(10, 10, 10, 0.98) 100%),
+    linear-gradient(to bottom, transparent 0%, rgba(10, 10, 10, 0.5) 100%);
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+}
+
+/* ─── Navigation ────────────────────────────────────────────────────────────────── */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.logoSmall {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navLink {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #a0a0a0;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.navLink:hover {
+  color: #f5f5f5;
+}
+
+.navButton {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #f5f5f5;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ─── Hero Section ──────────────────────────────────────────────────────────────── */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem 6rem;
+  max-width: 800px;
+  margin: 0 auto;
+  min-height: calc(100vh - 100px);
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 100px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #818cf8;
+  margin-bottom: 1.5rem;
+}
+
+.heroTitle {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 900;
+  color: #f5f5f5;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+}
+
+.heroSubtitle {
+  font-size: 1.125rem;
+  color: #a0a0a0;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-bottom: 2.5rem;
+}
+
+.heroActions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 4rem;
+}
+
+/* ─── Buttons ───────────────────────────────────────────────────────────────────── */
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0a0a0a;
+  background: #f5f5f5;
+  border: 2px solid #f5f5f5;
+  border-radius: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.primaryButton:hover {
+  background: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+.primaryButton:active {
+  transform: translateY(0);
+}
+
+.secondaryButton {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #a0a0a0;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.secondaryButton:hover {
+  color: #f5f5f5;
+}
+
+/* ─── Features ──────────────────────────────────────────────────────────────────── */
+.features {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.feature:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.featureIcon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(255, 159, 252, 0.2));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #818cf8;
+}
+
+.featureText {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.featureText strong {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #f5f5f5;
+}
+
+.featureText span {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+/* ─── Error State ───────────────────────────────────────────────────────────────── */
+.card {
+  max-width: 500px;
+  margin: 4rem auto;
+  padding: 3rem;
+  background: rgba(30, 30, 30, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  text-align: center;
+}
+
+.logo {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #f5f5f5;
+  margin-bottom: 2rem;
+  letter-spacing: -0.02em;
+}
+
+.errorBox {
+  padding: 1.5rem;
+  background: rgba(217, 66, 66, 0.1);
+  border: 1px solid rgba(217, 66, 66, 0.3);
+  border-radius: 12px;
+}
+
+.errorBox h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ff8888;
+  margin-bottom: 0.5rem;
+}
+
+.errorBox p {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+  margin: 0;
+}
+
+.errorBox code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: #B19EEF;
+}
+
+/* ─── Responsive ────────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .nav {
+    padding: 1rem;
+  }
+  
+  .navLinks {
+    gap: 1rem;
+  }
+  
+  .hero {
+    padding: 2rem 1rem 4rem;
+    min-height: calc(100vh - 80px);
+  }
+  
+  .features {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .feature {
+    justify-content: flex-start;
+  }
+}

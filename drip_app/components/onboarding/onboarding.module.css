@@ -1,0 +1,554 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ONBOARDING - Desktop-First Layout (Compact)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Root ───────────────────────────────────────────────────────────────────── */
+.onboardingRoot {
+  min-height: 100vh;
+  width: 100%;
+  background: #0a0a0a;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Progress Header ────────────────────────────────────────────────────────── */
+.progressHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem 2rem;
+}
+
+/* ─── Main Layout ────────────────────────────────────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 40% 60%;
+  height: 100vh;
+  padding-top: 70px;
+}
+
+/* ─── Left Panel ─────────────────────────────────────────────────────────────── */
+.leftPanel {
+ background: linear-gradient(180deg, #0f0f0f 0%, #0a0a0a 100%);
+ border-right: 1px solid rgba(255, 255, 255, 0.06);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ padding: 1.5rem;
+ position: relative;
+ overflow: hidden;
+}
+
+.leftContent {
+ width: 100%;
+ max-width: 360px;
+}
+
+.leftHeader {
+ margin-bottom: 1.25rem;
+}
+
+.stepBadge {
+ display: inline-block;
+ padding: 0.3rem 0.6rem;
+ background: rgba(99, 102, 241, 0.15);
+ border: 1px solid rgba(99, 102, 241, 0.3);
+ border-radius: 100px;
+ font-size: 0.65rem;
+ font-weight: 600;
+ color: #6366f1;
+ text-transform: uppercase;
+ letter-spacing: 0.05em;
+ margin-bottom: 0.875rem;
+}
+
+.leftTitle {
+ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+ font-size: 1.75rem;
+ font-weight: 800;
+ color: #ffffff;
+ margin: 0 0 0.5rem 0;
+ letter-spacing: -0.02em;
+ line-height: 1.1;
+}
+
+.leftDescription {
+ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+ font-size: 0.85rem;
+ font-weight: 400;
+ color: rgba(255, 255, 255, 0.6);
+ margin: 0;
+ line-height: 1.5;
+}
+
+/* Stats Grid */
+.statsGrid {
+ display: grid;
+ grid-template-columns: repeat(3, 1fr);
+ gap: 0.5rem;
+ margin-top: 1.25rem;
+}
+
+.statCard {
+ background: rgba(255, 255, 255, 0.03);
+ border: 1px solid rgba(255, 255, 255, 0.08);
+ border-radius: 10px;
+ padding: 0.75rem;
+ display: flex;
+ flex-direction: column;
+ gap: 0.25rem;
+}
+
+.statLabel {
+ font-size: 0.6rem;
+ font-weight: 500;
+ color: rgba(255, 255, 255, 0.5);
+ text-transform: uppercase;
+ letter-spacing: 0.05em;
+}
+
+.statValue {
+ font-size: 0.85rem;
+ font-weight: 600;
+ color: #ffffff;
+}
+
+/* Decorative Element */
+.decorativeElement {
+ position: absolute;
+ bottom: 1.5rem;
+ left: 1.5rem;
+ right: 1.5rem;
+ height: 120px;
+ pointer-events: none;
+}
+
+.decoCircle1 {
+ position: absolute;
+ width: 160px;
+ height: 160px;
+ border-radius: 50%;
+ background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+ bottom: -40px;
+ right: -20px;
+}
+
+.decoCircle2 {
+ position: absolute;
+ width: 120px;
+ height: 120px;
+ border-radius: 50%;
+ background: radial-gradient(circle, rgba(236, 72, 153, 0.06) 0%, transparent 70%);
+ bottom: 0;
+ left: 5%;
+}
+
+.decoLine {
+ position: absolute;
+ bottom: 0;
+ left: 0;
+ right: 0;
+ height: 1px;
+ background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+/* ─── Right Panel ────────────────────────────────────────────────────────────── */
+.rightPanel {
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ padding: 1.5rem;
+ background: #0a0a0a;
+ overflow-y: auto;
+}
+
+.formContainer {
+ width: 100%;
+ max-width: 440px;
+}
+
+/* ─── Form Header ────────────────────────────────────────────────────────────── */
+.stepHeader {
+ margin-bottom: 1.25rem;
+}
+
+.stepTitle {
+ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+ font-size: 1.15rem;
+ font-weight: 700;
+ color: #ffffff;
+ margin: 0 0 0.25rem 0;
+}
+
+.stepDescription {
+ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+ font-size: 0.8rem;
+ font-weight: 400;
+ color: #888888;
+ margin: 0;
+}
+
+/* ─── Section Label ──────────────────────────────────────────────────────────── */
+.formSection {
+ margin-bottom: 1rem;
+}
+
+.sectionLabel {
+ display: block;
+ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+ font-size: 0.75rem;
+ font-weight: 600;
+ color: #a0a0a0;
+ margin-bottom: 0.6rem;
+}
+
+/* ─── Quiz Cards ─────────────────────────────────────────────────────────────── */
+.quizGrid {
+ display: grid;
+ grid-template-columns: repeat(2, 1fr);
+ gap: 0.6rem;
+}
+
+.quizCard {
+ padding: 0.875rem;
+ background: rgba(255, 255, 255, 0.03);
+ border: 2px solid transparent;
+ border-radius: 10px;
+ cursor: pointer;
+ transition: all 0.2s ease;
+ text-align: left;
+}
+
+.quizCard:hover {
+ border-color: rgba(255, 255, 255, 0.15);
+ background: rgba(255, 255, 255, 0.05);
+ transform: translateY(-2px);
+}
+
+.quizCardSelected {
+ border-color: #6366f1;
+ background: rgba(99, 102, 241, 0.1);
+}
+
+.quizCardTitle {
+ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+ font-size: 0.85rem;
+ font-weight: 600;
+ color: #ffffff;
+ margin: 0 0 0.1rem 0;
+}
+
+.quizCardDescription {
+ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+ font-size: 0.7rem;
+ font-weight: 400;
+ color: #888888;
+ margin: 0;
+}
+
+/* ─── Inputs ─────────────────────────────────────────────────────────────────── */
+.input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  font-size: 0.95rem;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  border-color: #6366f1;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.input::placeholder {
+  color: #666666;
+}
+
+/* ─── Buttons ────────────────────────────────────────────────────────────────── */
+.button {
+ width: 100%;
+ padding: 0.75rem 1rem;
+ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+ font-size: 0.85rem;
+ font-weight: 700;
+ color: #0a0a0a;
+ background: #ffffff;
+ border: 2px solid #ffffff;
+ border-radius: 10px;
+ cursor: pointer;
+ transition: all 0.15s ease;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 0.5rem;
+}
+
+.button:hover:not(:disabled) {
+ transform: translate(-2px, -2px);
+ box-shadow: 4px 4px 0 #ffffff;
+}
+
+.button:active:not(:disabled) {
+ transform: translate(0, 0);
+ box-shadow: 2px 2px 0 #ffffff;
+}
+
+.button:disabled {
+ opacity: 0.5;
+ cursor: not-allowed;
+}
+
+.buttonSecondary {
+ background: transparent;
+ color: #ffffff;
+ border-color: rgba(255, 255, 255, 0.3);
+}
+
+.buttonSecondary:hover:not(:disabled) {
+ background: rgba(255, 255, 255, 0.1);
+ border-color: rgba(255, 255, 255, 0.5);
+ box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* ─── Navigation Buttons ─────────────────────────────────────────────────────── */
+.navButtons {
+ display: flex;
+ gap: 0.6rem;
+ margin-top: 1.25rem;
+}
+
+.navButtons .button {
+ flex: 1;
+}
+
+/* ─── Location Section ─────────────────────────────────────────────────────────── */
+.locationContainer {
+ text-align: center;
+ padding: 0.25rem 0;
+}
+
+.locationIcon {
+ font-size: 2rem;
+ margin-bottom: 0.75rem;
+}
+
+.locationFallback {
+ margin-top: 1.25rem;
+ padding-top: 1.25rem;
+ border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.locationText {
+ font-size: 0.8rem;
+ color: #666666;
+ margin-bottom: 0.875rem;
+}
+
+/* ─── Upload Grid ────────────────────────────────────────────────────────────── */
+.uploadGrid {
+ display: grid;
+ grid-template-columns: repeat(3, 1fr);
+ gap: 0.75rem;
+ margin-bottom: 1.25rem;
+}
+
+.uploadSlot {
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.uploadSlot:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.uploadSlotFilled {
+  border-style: solid;
+  border-color: #6366f1;
+}
+
+.uploadPlus {
+  font-size: 1.75rem;
+  color: #6366f1;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.uploadText {
+  font-size: 0.75rem;
+  color: #888888;
+  margin-top: 0.5rem;
+}
+
+.uploadPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.uploadRemove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  background: #ff4444;
+  border: none;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.uploadRemove:hover {
+  background: #cc3333;
+  transform: scale(1.1);
+}
+
+/* ─── Error Message ────────────────────────────────────────────────────────────── */
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: #ff8888;
+  margin-bottom: 1rem;
+}
+
+/* ─── Spinner ──────────────────────────────────────────────────────────────────── */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ─── Analyzing Screen ─────────────────────────────────────────────────────────── */
+.analyzingContainer {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.analyzingSpinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem;
+}
+
+.analyzingTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+}
+
+.analyzingText {
+  font-size: 0.95rem;
+  color: #888888;
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE - Tablet & Mobile
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .leftPanel {
+    display: none;
+  }
+  
+  .rightPanel {
+    padding: 3rem 2rem;
+  }
+  
+  .formContainer {
+    max-width: 480px;
+  }
+}
+
+@media (max-width: 640px) {
+  .progressHeader {
+    padding: 1rem 1.5rem;
+  }
+  
+  .rightPanel {
+    padding: 2rem 1.5rem;
+  }
+  
+  .formContainer {
+    max-width: 100%;
+  }
+  
+  .stepTitle {
+    font-size: 1.5rem;
+  }
+  
+  .quizGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quizCard {
+    padding: 1.25rem;
+  }
+  
+  .uploadGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .navButtons {
+    flex-direction: column;
+  }
+  
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Hidden File Input ────────────────────────────────────────────────────────── */
+.fileInput {
+  display: none;
+}

@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { ArrowLeft, Plus, Shirt, Sparkles } from 'lucide-react';
+import { useState, useTransition } from 'react';
+import { ArrowLeft, Plus, Shirt, Trash2, Edit2 } from 'lucide-react';
 import type { ClothingItem } from '@/types/database';
 import styles from './wardrobe.module.css';
+import { deleteClothingItem, updateClothingItem } from '@/lib/actions/clothing';
+import { ClothingEditModal } from '@/components/clothing/ClothingEditModal';
+import type { ClothingAnalysis } from '@/components/clothing/ClothingAnalysisModal';
 
 interface WardrobeViewProps {
   clothingItems: ClothingItem[];
@@ -20,10 +23,71 @@ const FILTERS = [
 
 export function WardrobeView({ clothingItems }: WardrobeViewProps) {
   const [activeFilter, setActiveFilter] = useState('all');
+  const [editingItem, setEditingItem] = useState<ClothingItem | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<ClothingItem | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const filteredItems = activeFilter === 'all'
     ? clothingItems
     : clothingItems.filter(item => item.type?.toLowerCase() === activeFilter);
+
+  const confirmDelete = () => {
+    if (!itemToDelete || !itemToDelete.photo_url) return;
+
+    startTransition(async () => {
+      try {
+        const result = await deleteClothingItem(itemToDelete.id, itemToDelete.photo_url!);
+        if (result.success) {
+          setItemToDelete(null);
+        } else {
+          console.error('Failed to delete item:', result.error);
+          alert('Failed to delete item: ' + result.error);
+        }
+      } catch (error) {
+        console.error('Delete error:', error);
+        alert('An unexpected error occurred while deleting.');
+      }
+    });
+  };
+
+  const handleEditSave = async (data: ClothingAnalysis) => {
+    if (!editingItem) return;
+
+    try {
+      const result = await updateClothingItem(editingItem.id, data);
+      if (result.success) {
+        setEditingItem(null);
+      } else {
+        console.error('Failed to update item:', result.error);
+        alert('Failed to update item: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Update error:', error);
+      alert('An unexpected error occurred while updating.');
+    }
+  };
+
+  // Convert DB ClothingItem format to ClothingAnalysis format for the edit form
+  const getEditingData = (): ClothingAnalysis | null => {
+    if (!editingItem) return null;
+    return {
+      name: editingItem.name || '',
+      type: (editingItem.type as ClothingAnalysis['type']) || 'top',
+      sub_type: editingItem.sub_type || undefined,
+      color: editingItem.color || '',
+      secondary_color: editingItem.secondary_color || undefined,
+      pattern: (editingItem.pattern as ClothingAnalysis['pattern']) || 'solid',
+      material: editingItem.material || undefined,
+      formality: (editingItem.formality as ClothingAnalysis['formality']) || 'casual',
+      warmth_rating: (editingItem.warmth_rating as ClothingAnalysis['warmth_rating']) || 3,
+      seasons: (editingItem.seasons as ClothingAnalysis['seasons']) || ['spring', 'summer', 'fall', 'winter'],
+      layer_type: (editingItem.layer_type as ClothingAnalysis['layer_type']) || 'base',
+      fit: (editingItem.fit as ClothingAnalysis['fit']) || 'regular',
+      occasion_tags: editingItem.occasion_tags || ['Everyday'],
+    };
+  };
+
+  const editingData = getEditingData();
 
   return (
     <div className={styles.root}>
@@ -87,13 +151,35 @@ export function WardrobeView({ clothingItems }: WardrobeViewProps) {
         {filteredItems.length > 0 ? (
           <div className={styles.grid}>
             {filteredItems.map((item) => (
-              <div key={item.id} className={styles.item}>
+              <div key={item.id} className={styles.item} style={{ opacity: isPending ? 0.7 : 1 }}>
                 <img
-                  src={item.photo_url}
+                  src={item.photo_url || ''}
                   alt={item.name ?? 'Clothing item'}
                   className={styles.itemImage}
                 />
                 <div className={styles.itemOverlay}>
+                  <div className={styles.actionButtons}>
+                    <button
+                      className={styles.actionButton}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingItem(item);
+                      }}
+                      title="Edit Item"
+                    >
+                      <Edit2 size={14} />
+                    </button>
+                    <button
+                      className={`${styles.actionButton} ${styles.deleteButton}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setItemToDelete(item);
+                      }}
+                      title="Delete Item"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                   <span className={styles.itemName}>
                     {item.name ?? item.sub_type ?? item.type ?? 'Item'}
                   </span>
@@ -111,7 +197,7 @@ export function WardrobeView({ clothingItems }: WardrobeViewProps) {
             </div>
             <h3 className={styles.emptyTitle}>No items found</h3>
             <p className={styles.emptyText}>
-              {activeFilter === 'all' 
+              {activeFilter === 'all'
                 ? 'Your wardrobe is empty. Add some items to get started.'
                 : `No ${activeFilter} items in your wardrobe.`}
             </p>
@@ -122,6 +208,43 @@ export function WardrobeView({ clothingItems }: WardrobeViewProps) {
           </div>
         )}
       </main>
+
+      {/* Edit Modal */}
+      {editingItem && editingData && (
+        <ClothingEditModal
+          isOpen={!!editingItem}
+          initialData={editingData}
+          imageUrl={editingItem.photo_url || ''}
+          onClose={() => setEditingItem(null)}
+          onSave={handleEditSave}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {itemToDelete && (
+        <div className={styles.modalOverlay} onClick={() => !isPending && setItemToDelete(null)}>
+          <div className={styles.confirmModal} onClick={(e) => e.stopPropagation()}>
+            <h3>Delete this item?</h3>
+            <p>Are you sure you want to delete <strong>{itemToDelete.name || itemToDelete.sub_type || itemToDelete.type || 'this item'}</strong> from your wardrobe? This action cannot be undone.</p>
+            <div className={styles.modalActions}>
+              <button
+                className={styles.secondaryButton}
+                onClick={() => setItemToDelete(null)}
+                disabled={isPending}
+              >
+                Cancel
+              </button>
+              <button
+                className={styles.dangerButton}
+                onClick={confirmDelete}
+                disabled={isPending}
+              >
+                {isPending ? 'Deleting...' : 'Delete Permanently'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

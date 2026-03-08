@@ -110,13 +110,21 @@
 }
 
 /* ─── Modal Body ───────────────────────────────────────────────────────────────── */
+.analysisForm {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
 .modalBody {
   display: grid;
   grid-template-columns: 300px 1fr;
   gap: 2rem;
   padding: 2rem;
   overflow-y: auto;
-  max-height: calc(90vh - 140px);
+  flex: 1;
+  min-height: 0;
 }
 
 /* ─── Image Preview ────────────────────────────────────────────────────────────── */

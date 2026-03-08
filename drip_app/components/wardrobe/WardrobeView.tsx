@@ -1,35 +1,123 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { ArrowLeft, Plus, Shirt, Trash2, Edit2 } from 'lucide-react';
+import { useState, useTransition, useRef, useEffect } from 'react';
+import { ArrowLeft, Plus, Shirt, Trash2, Edit2, Search, FilterX, ChevronDown } from 'lucide-react';
 import type { ClothingItem } from '@/types/database';
 import styles from './wardrobe.module.css';
 import { deleteClothingItem, updateClothingItem } from '@/lib/actions/clothing';
 import { ClothingEditModal } from '@/components/clothing/ClothingEditModal';
 import type { ClothingAnalysis } from '@/components/clothing/ClothingAnalysisModal';
+import { WardrobeSlidePanel } from '@/components/dashboard/WardrobeSlidePanel';
 
 interface WardrobeViewProps {
   clothingItems: ClothingItem[];
 }
 
-const FILTERS = [
-  { key: 'all', label: 'All Items' },
-  { key: 'top', label: 'Tops' },
-  { key: 'bottom', label: 'Bottoms' },
-  { key: 'outerwear', label: 'Outerwear' },
-  { key: 'shoes', label: 'Shoes' },
-  { key: 'accessory', label: 'Accessories' },
-];
+const TYPES = ['all', 'top', 'bottom', 'outerwear', 'shoes', 'accessory'];
+const SEASONS = ['all', 'spring', 'summer', 'fall', 'winter'];
+const WARMTH_LABELS = ['All', 'Very Light', 'Light', 'Medium', 'Warm', 'Very Warm'];
+// We'll extract unique colors dynamically from the user's wardrobe for the color filter
+
+interface CustomDropdownProps {
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+}
+
+function CustomDropdown({ value, onChange, options }: CustomDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const selectedOption = options.find(opt => opt.value === value) || options[0];
+
+  return (
+    <div className={styles.customDropdown} ref={dropdownRef}>
+      <button
+        className={styles.dropdownButton}
+        onClick={() => setIsOpen(!isOpen)}
+        type="button"
+      >
+        <span className={styles.dropdownText}>{selectedOption.label}</span>
+        <ChevronDown size={16} className={`${styles.dropdownIcon} ${isOpen ? styles.dropdownIconOpen : ''}`} />
+      </button>
+
+      {isOpen && (
+        <div className={styles.dropdownMenu}>
+          {options.map((option) => (
+            <button
+              key={option.value}
+              className={`${styles.dropdownOption} ${value === option.value ? styles.dropdownOptionActive : ''}`}
+              onClick={() => {
+                onChange(option.value);
+                setIsOpen(false);
+              }}
+              type="button"
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function WardrobeView({ clothingItems }: WardrobeViewProps) {
-  const [activeFilter, setActiveFilter] = useState('all');
+  // Filter States
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeType, setActiveType] = useState('all');
+  const [activeSeason, setActiveSeason] = useState('all');
+  const [activeColor, setActiveColor] = useState('all');
+  const [activeWarmth, setActiveWarmth] = useState('0'); // '0' means all
+
+  // Modal States
   const [editingItem, setEditingItem] = useState<ClothingItem | null>(null);
   const [itemToDelete, setItemToDelete] = useState<ClothingItem | null>(null);
+  const [isSlidePanelOpen, setIsSlidePanelOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const filteredItems = activeFilter === 'all'
-    ? clothingItems
-    : clothingItems.filter(item => item.type?.toLowerCase() === activeFilter);
+  // Extract unique colors for the filter dropdown
+  const uniqueColors = ['all', ...Array.from(new Set(clothingItems.map(item => item.color).filter(Boolean)))];
+
+  // Apply all filters additively (Intersection logic: Search AND Type AND Season AND Color AND Warmth)
+  const filteredItems = clothingItems.filter(item => {
+    const matchesSearch = searchQuery === '' ||
+      (item.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.sub_type || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.type || '').toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesType = activeType === 'all' || item.type?.toLowerCase() === activeType;
+
+    // items.seasons is assumed to be an array of strings like ['spring', 'summer']
+    const matchesSeason = activeSeason === 'all' ||
+      (Array.isArray(item.seasons) && item.seasons.includes(activeSeason));
+
+    const matchesColor = activeColor === 'all' || item.color?.toLowerCase() === activeColor.toLowerCase();
+
+    const matchesWarmth = activeWarmth === '0' || item.warmth_rating?.toString() === activeWarmth;
+
+    return matchesSearch && matchesType && matchesSeason && matchesColor && matchesWarmth;
+  });
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setActiveType('all');
+    setActiveSeason('all');
+    setActiveColor('all');
+    setActiveWarmth('0');
+  };
+
+  const hasActiveFilters = searchQuery !== '' || activeType !== 'all' || activeSeason !== 'all' || activeColor !== 'all' || activeWarmth !== '0';
 
   const confirmDelete = () => {
     if (!itemToDelete || !itemToDelete.photo_url) return;
@@ -89,6 +177,11 @@ export function WardrobeView({ clothingItems }: WardrobeViewProps) {
 
   const editingData = getEditingData();
 
+  const typeOptions = TYPES.map(t => ({ value: t, label: t === 'all' ? 'All Types' : t.charAt(0).toUpperCase() + t.slice(1) }));
+  const seasonOptions = SEASONS.map(s => ({ value: s, label: s === 'all' ? 'All Seasons' : s.charAt(0).toUpperCase() + s.slice(1) }));
+  const colorOptions = uniqueColors.map(c => ({ value: c as string, label: c === 'all' ? 'All Colors' : (c as string).charAt(0).toUpperCase() + (c as string).slice(1) }));
+  const warmthOptions = WARMTH_LABELS.map((lbl, idx) => ({ value: idx.toString(), label: lbl }));
+
   return (
     <div className={styles.root}>
       {/* Header */}
@@ -99,10 +192,10 @@ export function WardrobeView({ clothingItems }: WardrobeViewProps) {
             <span>Back</span>
           </a>
           <h1 className={styles.title}>Your Wardrobe</h1>
-          <a href="/onboarding" className={styles.addButton}>
+          <button onClick={() => setIsSlidePanelOpen(true)} className={styles.addButton}>
             <Plus size={18} />
             <span>Add</span>
-          </a>
+          </button>
         </div>
       </header>
 
@@ -134,17 +227,50 @@ export function WardrobeView({ clothingItems }: WardrobeViewProps) {
           </div>
         </div>
 
-        {/* Filters */}
-        <div className={styles.filters}>
-          {FILTERS.map((filter) => (
-            <button
-              key={filter.key}
-              className={`${styles.filterButton} ${activeFilter === filter.key ? styles.filterButtonActive : ''}`}
-              onClick={() => setActiveFilter(filter.key)}
-            >
-              {filter.label}
-            </button>
-          ))}
+        {/* Filter Toolbar */}
+        <div className={styles.filterToolbar}>
+          <div className={styles.searchBar}>
+            <Search className={styles.searchIcon} size={18} />
+            <input
+              type="text"
+              placeholder="Search items..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={styles.searchInput}
+            />
+          </div>
+
+          <div className={styles.filterDropdowns}>
+            <CustomDropdown
+              value={activeType}
+              onChange={setActiveType}
+              options={typeOptions}
+            />
+
+            <CustomDropdown
+              value={activeSeason}
+              onChange={setActiveSeason}
+              options={seasonOptions}
+            />
+
+            <CustomDropdown
+              value={activeColor}
+              onChange={setActiveColor}
+              options={colorOptions}
+            />
+
+            <CustomDropdown
+              value={activeWarmth}
+              onChange={setActiveWarmth}
+              options={warmthOptions}
+            />
+
+            {hasActiveFilters && (
+              <button onClick={clearFilters} className={styles.clearFiltersBtn} title="Clear Filters">
+                <FilterX size={16} />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Grid */}
@@ -197,14 +323,14 @@ export function WardrobeView({ clothingItems }: WardrobeViewProps) {
             </div>
             <h3 className={styles.emptyTitle}>No items found</h3>
             <p className={styles.emptyText}>
-              {activeFilter === 'all'
-                ? 'Your wardrobe is empty. Add some items to get started.'
-                : `No ${activeFilter} items in your wardrobe.`}
+              {hasActiveFilters
+                ? 'No items match your selected filters and search.'
+                : 'Your wardrobe is empty. Add some items to get started.'}
             </p>
-            <a href="/onboarding" className={styles.emptyButton}>
+            <button onClick={() => setIsSlidePanelOpen(true)} className={styles.emptyButton}>
               <Plus size={18} />
               Add Items
-            </a>
+            </button>
           </div>
         )}
       </main>
@@ -245,6 +371,13 @@ export function WardrobeView({ clothingItems }: WardrobeViewProps) {
           </div>
         </div>
       )}
+
+      {/* Slide Panel for Uploading New Items */}
+      <WardrobeSlidePanel
+        isOpen={isSlidePanelOpen}
+        onClose={() => setIsSlidePanelOpen(false)}
+        onUploadComplete={() => window.location.reload()}
+      />
     </div>
   );
 }

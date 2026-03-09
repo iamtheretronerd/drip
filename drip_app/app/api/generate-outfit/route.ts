@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { mood, weather } = body as { mood?: string; weather?: WeatherData };
+    const { mood, weather, seed } = body as { mood?: string; weather?: WeatherData; seed?: number };
 
     // Fetch profile, clothing items, and recent outfit logs in parallel
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     if (GEMINI_API_KEY) {
       try {
-        suggestion = await callGemini(filtered, items, weather ?? null, mood ?? null, profile);
+        suggestion = await callGemini(filtered, items, weather ?? null, mood ?? null, profile, seed);
       } catch (err) {
         console.error('Gemini outfit generation failed, using fallback:', err);
         suggestion = fallbackOutfit(filtered);
@@ -89,7 +89,8 @@ async function callGemini(
   allItems: ClothingItem[],
   weather: WeatherData | null,
   mood: string | null,
-  profile: Profile | null
+  profile: Profile | null,
+  seed?: number
 ): Promise<OutfitSuggestion> {
   const wardrobe = buildGeminiPayload(filtered);
 
@@ -107,6 +108,7 @@ Style rules:
 - Balance proportions (slim top + loose bottom or vice versa)
 - Consider layering compatibility
 - Weather appropriateness is the top priority — never suggest warm layers in hot weather or vice versa
+- The two accessories MUST be different items AND different types. Never return two necklaces, two hats, or two earrings. Aim for variety (e.g., necklace + ring, or hat + earrings).
 
 User preferences:
 - Lifestyle: ${profile?.lifestyle ?? 'casual'}
@@ -129,6 +131,8 @@ ${mood ? `Mood: ${mood}` : ''}
 
 Available wardrobe:
 ${JSON.stringify(wardrobe, null, 2)}
+
+${seed ? `Variety Seed: ${seed}. If this is a regeneration, provide a DIFFERENT combination than your previous suggestion while still following all rules.` : ''}
 
 Pick the best outfit combination. Return ONLY the JSON.`;
 

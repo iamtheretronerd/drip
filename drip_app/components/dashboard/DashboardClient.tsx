@@ -6,25 +6,29 @@ import type { WeatherData } from '@/types/weather';
 import type { OutfitSuggestion } from '@/types/outfit';
 import { logout } from '@/lib/actions/auth';
 import {
-  Sparkles,
   RefreshCw,
+  Sparkles,
   Plus,
+  Shirt,
+  Umbrella,
   Send,
+  ArrowRight,
+  LogOut,
+  Home,
+  History,
+  Settings,
+  Check,
+  CheckCircle2,
   Thermometer,
   Wind,
   Droplets,
-  ArrowRight,
-  LogOut,
-  Shirt,
-  Umbrella,
-  Home,
-  History,
-  Settings
 } from 'lucide-react';
 import Grainient from '@/components/Grainient';
 import { WardrobeSlidePanel } from './WardrobeSlidePanel';
 import { PieceSwapModal } from '@/components/outfit/PieceSwapModal';
-import { filterWardrobe, getSwapAlternatives } from '@/lib/outfit-engine';
+import { filterWardrobe, getSwapAlternatives, isOnePiece } from '@/lib/outfit-engine';
+import { logOutfit } from '@/lib/actions/outfit_logs';
+import { WeatherSnapshot } from '@/types/database';
 import styles from './dashboard.module.css';
 
 interface DashboardClientProps {
@@ -56,19 +60,7 @@ const OPTIONAL_SLOTS = [
 
 const ALL_SLOTS = [...MANDATORY_SLOTS, ...OPTIONAL_SLOTS];
 
-const isOnePiece = (item: ClothingItem | null) => {
-  if (!item) return false;
-  const name = (item.name || '').toLowerCase();
-  const subType = (item.sub_type || '').toLowerCase();
-  const type = (item.type || '').toLowerCase();
 
-  const onePieceTerms = ['dress', 'jumpsuit', 'romper', 'gown', 'bodysuit', 'onesie'];
-  return onePieceTerms.some(term =>
-    name.includes(term) ||
-    subType.includes(term) ||
-    (type === 'top' && (name.includes('dress') || subType.includes('dress')))
-  );
-};
 
 export function DashboardClient({ profile, clothingItems, recentLogs }: DashboardClientProps) {
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -79,6 +71,9 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
   const [isSlidePanelOpen, setIsSlidePanelOpen] = useState(false);
   const [currentSwapSlot, setCurrentSwapSlot] = useState<typeof ALL_SLOTS[number]['key'] | null>(null);
   const [isSwapModalOpen, setIsSwapModalOpen] = useState(false);
+  const [wasModified, setWasModified] = useState(false);
+  const [isLogging, setIsLogging] = useState(false);
+  const [lastLoggedDate, setLastLoggedDate] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchWeather() {
@@ -109,11 +104,18 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
         const res = await fetch('/api/generate-outfit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mood: moodText, weather }),
+          body: JSON.stringify({
+            mood: moodText,
+            weather,
+            seed: Math.random() // Break determinism
+          }),
         });
         if (res.ok) {
           const data = await res.json();
-          if (!data.error) setOutfit(data);
+          if (!data.error) {
+            setOutfit(data);
+            setWasModified(false);
+          }
         }
       } catch (err) {
         console.error('Failed to generate outfit:', err);
@@ -148,7 +150,44 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
       ...outfit,
       [currentSwapSlot]: item,
     });
+    setWasModified(true);
     setIsSwapModalOpen(false);
+  };
+
+  const handleLogOutfit = async () => {
+    if (!outfit || isLogging) return;
+
+    setIsLogging(true);
+    try {
+      const itemIds = [
+        outfit.top?.id,
+        outfit.bottom?.id,
+        outfit.shoes?.id,
+        outfit.outerwear?.id,
+        outfit.accessory1?.id,
+        outfit.accessory2?.id,
+      ].filter(Boolean) as string[];
+
+      const weatherSnapshot: WeatherSnapshot | null = weather ? {
+        temp: weather.temp,
+        feels_like: weather.feels_like,
+        description: weather.description,
+        icon: weather.icon,
+        precipitation_chance: weather.precipitation_chance
+      } : null;
+
+      const result = await logOutfit(itemIds, weatherSnapshot, mood || null, wasModified);
+      if (result.success) {
+        setLastLoggedDate(new Date().toDateString());
+        // Toast or success state?
+      } else {
+        alert(result.error || 'Failed to log outfit');
+      }
+    } catch (err) {
+      console.error('Logging error:', err);
+    } finally {
+      setIsLogging(false);
+    }
   };
 
   const handleMoodSubmit = (e: React.FormEvent) => {
@@ -328,13 +367,37 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
               </div>
             )}
 
-            {/* Regenerate Button */}
+            {/* Action Bar */}
             {outfit && !outfitLoading && (
-              <div className={styles.regenerateBar}>
-                <button className={styles.button} onClick={() => generateOutfit()}>
+              <div className={styles.actionGrid}>
+                <button
+                  className={`${styles.button} ${styles.buttonOutline}`}
+                  onClick={() => generateOutfit()}
+                  disabled={isLogging}
+                >
                   <RefreshCw size={16} />
                   Regenerate
                 </button>
+
+                {lastLoggedDate === new Date().toDateString() ? (
+                  <button className={`${styles.button} ${styles.buttonSuccess}`} disabled>
+                    <CheckCircle2 size={16} />
+                    Logged for Today
+                  </button>
+                ) : (
+                  <button
+                    className={`${styles.button} ${styles.buttonAccent}`}
+                    onClick={handleLogOutfit}
+                    disabled={isLogging}
+                  >
+                    {isLogging ? (
+                      <div className={styles.spinnerSmall} />
+                    ) : (
+                      <Check size={16} />
+                    )}
+                    I'm Wearing This
+                  </button>
+                )}
               </div>
             )}
           </div>

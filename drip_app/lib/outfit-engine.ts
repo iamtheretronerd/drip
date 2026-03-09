@@ -133,7 +133,17 @@ function relaxFilter(
   predicate: (i: ClothingItem) => boolean
 ): ClothingItem[] {
   const result = current.filter(predicate);
-  return result.length > 0 ? result : current.length > 0 ? current : fallback;
+
+  // If we have at least 2 items, we have variety.
+  if (result.length >= 2) return result;
+
+  // If we only have 1 item but there were more items in the 'current' pool,
+  // we return the 'current' pool instead of narrowing it down to just 1.
+  // This ensures Gemini has options for regeneration.
+  if (result.length === 1 && current.length > 1) return current;
+
+  // If no items match the predicate at all, return the current pool (or fallback if empty)
+  return result.length > 0 ? result : (current.length > 0 ? current : fallback);
 }
 
 /**
@@ -143,14 +153,23 @@ function relaxFilter(
 export function fallbackOutfit(
   filtered: Record<Category, ClothingItem[]>
 ): OutfitSuggestion {
+  const pickRandom = (items: ClothingItem[]) =>
+    items.length > 0 ? items[Math.floor(Math.random() * items.length)] : null;
+
+  const accessory1 = pickRandom(filtered.accessory1);
+  const accessory2 = pickRandom(filtered.accessory2.filter(i =>
+    i.id !== accessory1?.id &&
+    (i.sub_type !== accessory1?.sub_type || !i.sub_type)
+  ));
+
   return {
-    top: filtered.top[0] ?? null,
-    bottom: filtered.bottom[0] ?? null,
-    shoes: filtered.shoes[0] ?? null,
-    outerwear: filtered.outerwear[0] ?? null,
-    accessory1: filtered.accessory1[0] ?? null,
-    accessory2: filtered.accessory2[1] ?? null,
-    reasoning: 'Selected based on weather and wardrobe rules.',
+    top: pickRandom(filtered.top),
+    bottom: pickRandom(filtered.bottom),
+    shoes: pickRandom(filtered.shoes),
+    outerwear: pickRandom(filtered.outerwear),
+    accessory1,
+    accessory2,
+    reasoning: 'Selected based on weather and wardrobe rules (fallback mode).',
   };
 }
 
@@ -169,6 +188,7 @@ export function buildGeminiPayload(filtered: Record<Category, ClothingItem[]>) {
     formality: item.formality,
     layer_type: item.layer_type,
     fit: item.fit,
+    sub_type: item.sub_type,
     occasion_tags: item.occasion_tags,
     warmth_rating: item.warmth_rating,
   });

@@ -266,7 +266,7 @@
   z-index: 0;
 }
 
-.grainientContainer > div,
+.grainientContainer>div,
 .grainientContainer canvas {
   width: 100% !important;
   height: 100% !important;
@@ -281,6 +281,7 @@
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
+  overflow-y: auto;
 }
 
 /* Weather - Icon & Temp Left, Details Below */
@@ -381,20 +382,35 @@
 
 /* Outfit Container */
 .outfitContainer {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.875rem;
-  padding: 6rem 1rem 2rem;
-  max-width: 320px;
+  padding: 12rem 1rem 2rem;
+  max-width: 420px;
   margin: 0 auto;
   width: 100%;
 }
 
+.outfitGrid {
+  display: grid;
+  grid-template-columns: 1fr 0.6fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.mandatoryColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.optionalColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 2rem;
+}
+
 /* Modern Outfit Slots */
 .outfitSlot {
-  aspect-ratio: 2.2;
+  aspect-ratio: 1.5;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
@@ -425,8 +441,28 @@
   transition: transform 0.3s ease;
 }
 
-.outfitSlot:hover .outfitSlotImage {
-  transform: scale(1.05);
+.outfitSlotClickable {
+  cursor: pointer;
+}
+
+.outfitSlotOnePiece {
+  aspect-ratio: 0.7;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.outfitSlotOptional {
+  aspect-ratio: 1.2;
+}
+
+.outfitSlotClickable:hover {
+  transform: translateY(-2px);
+  border-color: rgba(155, 143, 214, 0.4);
+  background: rgba(155, 143, 214, 0.05);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.outfitSlotClickable:hover .outfitSlotImage {
+  transform: scale(1.08);
 }
 
 .outfitSlotEmpty {
@@ -489,7 +525,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loadingText {

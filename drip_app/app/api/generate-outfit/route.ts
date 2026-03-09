@@ -119,6 +119,8 @@ Return ONLY a JSON object with these fields:
   "bottom_id": "uuid or null",
   "shoes_id": "uuid or null",
   "outerwear_id": "uuid or null",
+  "accessory1_id": "uuid or null",
+  "accessory2_id": "uuid or null",
   "reasoning": "Brief explanation of why this outfit works"
 }`;
 
@@ -165,6 +167,8 @@ Pick the best outfit combination. Return ONLY the JSON.`;
     bottom: result.bottom_id ? itemMap.get(result.bottom_id) ?? null : null,
     shoes: result.shoes_id ? itemMap.get(result.shoes_id) ?? null : null,
     outerwear: result.outerwear_id ? itemMap.get(result.outerwear_id) ?? null : null,
+    accessory1: result.accessory1_id ? itemMap.get(result.accessory1_id) ?? null : null,
+    accessory2: result.accessory2_id ? itemMap.get(result.accessory2_id) ?? null : null,
     reasoning: result.reasoning ?? 'AI-selected outfit based on your style and weather.',
   };
 }

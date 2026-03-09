@@ -5,10 +5,10 @@ import type { Profile, ClothingItem, OutfitLog } from '@/types/database';
 import type { WeatherData } from '@/types/weather';
 import type { OutfitSuggestion } from '@/types/outfit';
 import { logout } from '@/lib/actions/auth';
-import { 
-  Sparkles, 
-  RefreshCw, 
-  Plus, 
+import {
+  Sparkles,
+  RefreshCw,
+  Plus,
   Send,
   Thermometer,
   Wind,
@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import Grainient from '@/components/Grainient';
 import { WardrobeSlidePanel } from './WardrobeSlidePanel';
+import { PieceSwapModal } from '@/components/outfit/PieceSwapModal';
+import { filterWardrobe, getSwapAlternatives } from '@/lib/outfit-engine';
 import styles from './dashboard.module.css';
 
 interface DashboardClientProps {
@@ -40,12 +42,33 @@ const MOODS = [
   { id: 'sporty', label: 'Sporty', emoji: '⚡', gradient: 'linear-gradient(135deg, #43e97b, #38f9d7)', description: 'Active & comfy' },
 ] as const;
 
-const SLOTS = [
-  { key: 'outerwear' as const, label: 'Outerwear', icon: Umbrella },
+const MANDATORY_SLOTS = [
   { key: 'top' as const, label: 'Top', icon: Shirt },
   { key: 'bottom' as const, label: 'Bottom', icon: Shirt },
   { key: 'shoes' as const, label: 'Shoes', icon: Shirt },
-];
+] as const;
+
+const OPTIONAL_SLOTS = [
+  { key: 'outerwear' as const, label: 'Outerwear', icon: Umbrella },
+  { key: 'accessory1' as const, label: 'Accessory 1', icon: Sparkles },
+  { key: 'accessory2' as const, label: 'Accessory 2', icon: Sparkles },
+] as const;
+
+const ALL_SLOTS = [...MANDATORY_SLOTS, ...OPTIONAL_SLOTS];
+
+const isOnePiece = (item: ClothingItem | null) => {
+  if (!item) return false;
+  const name = (item.name || '').toLowerCase();
+  const subType = (item.sub_type || '').toLowerCase();
+  const type = (item.type || '').toLowerCase();
+
+  const onePieceTerms = ['dress', 'jumpsuit', 'romper', 'gown', 'bodysuit', 'onesie'];
+  return onePieceTerms.some(term =>
+    name.includes(term) ||
+    subType.includes(term) ||
+    (type === 'top' && (name.includes('dress') || subType.includes('dress')))
+  );
+};
 
 export function DashboardClient({ profile, clothingItems, recentLogs }: DashboardClientProps) {
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -54,6 +77,8 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
   const [outfitLoading, setOutfitLoading] = useState(false);
   const [mood, setMood] = useState('');
   const [isSlidePanelOpen, setIsSlidePanelOpen] = useState(false);
+  const [currentSwapSlot, setCurrentSwapSlot] = useState<typeof ALL_SLOTS[number]['key'] | null>(null);
+  const [isSwapModalOpen, setIsSwapModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchWeather() {
@@ -99,6 +124,33 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
     [weather, clothingItems.length]
   );
 
+  const handleSwapPiece = (slot: typeof ALL_SLOTS[number]['key']) => {
+    setCurrentSwapSlot(slot);
+    setIsSwapModalOpen(true);
+  };
+
+  const getAlternatives = () => {
+    if (!currentSwapSlot || !weather) return [];
+
+    const recentItemIds = recentLogs.flatMap((log) => log.item_ids);
+    return getSwapAlternatives(clothingItems, currentSwapSlot, {
+      weather,
+      lifestyle: profile.lifestyle ?? null,
+      recentItemIds,
+      lat: profile.lat ?? 40,
+    });
+  };
+
+  const handleSelectAlternative = (item: ClothingItem | null) => {
+    if (!outfit || !currentSwapSlot) return;
+
+    setOutfit({
+      ...outfit,
+      [currentSwapSlot]: item,
+    });
+    setIsSwapModalOpen(false);
+  };
+
   const handleMoodSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (mood.trim()) generateOutfit(mood.trim());
@@ -135,7 +187,7 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
   return (
     <div className={styles.dashboardRoot}>
       <Header userInitial={userInitial} />
-      
+
       <div className={styles.layout}>
         {/* Left Panel - Grainient + Weather + Outfit */}
         <div className={styles.leftPanel}>
@@ -148,7 +200,7 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
               grainAmount={0.08}
             />
           </div>
-          
+
           <div className={styles.leftContent}>
             {/* Weather - Icon & Temp Left/Big, Details Below */}
             <div className={styles.weatherHorizontal}>
@@ -157,7 +209,7 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
               ) : weather ? (
                 <>
                   <div className={styles.weatherMain}>
-                    <img 
+                    <img
                       src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
                       alt={weather.description}
                       className={styles.weatherIconBig}
@@ -179,7 +231,7 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
                 </span>
               )}
             </div>
-            
+
             {/* Outfit Display - Only when generated */}
             {(outfitLoading || outfit) && (
               <div className={styles.outfitContainer}>
@@ -190,38 +242,92 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
                   </div>
                 ) : outfit ? (
                   <>
-                    {SLOTS.map(({ key, label, icon: Icon }) => {
-                      const item = outfit?.[key] ?? null;
-                      return (
-                        <div 
-                          key={key} 
-                          className={`${styles.outfitSlot} ${item ? styles.outfitSlotFilled : ''}`}
-                        >
-                          {item ? (
-                            <>
-                              <img
-                                src={item.photo_url}
-                                alt={item.name ?? label}
-                                className={styles.outfitSlotImage}
-                              />
-                              <div className={styles.outfitSlotLabel}>
-                                {item.name ?? label}
-                              </div>
-                            </>
-                          ) : (
-                            <div className={styles.outfitSlotEmpty}>
-                              <Icon size={20} className={styles.outfitSlotEmptyIcon} />
-                              <span>{label}</span>
+                    <div className={styles.outfitGrid}>
+                      <div className={styles.mandatoryColumn}>
+                        {MANDATORY_SLOTS.map(({ key, label, icon: Icon }) => {
+                          const item = (outfit as any)?.[key] ?? null;
+
+                          // Smart Hiding: Skip bottom slot if top is a one-piece
+                          if (key === 'bottom' && isOnePiece((outfit as any)?.top ?? null)) {
+                            return null;
+                          }
+
+                          return (
+                            <div
+                              key={key}
+                              className={`
+                                ${styles.outfitSlot} 
+                                ${item ? styles.outfitSlotFilled : ''} 
+                                ${!outfitLoading ? styles.outfitSlotClickable : ''}
+                                ${isOnePiece(item) ? styles.outfitSlotOnePiece : ''}
+                              `}
+                              onClick={() => !outfitLoading && handleSwapPiece(key)}
+                              title={`Swap ${label}`}
+                            >
+                              {item ? (
+                                <>
+                                  <img
+                                    src={item.photo_url}
+                                    alt={item.name ?? label}
+                                    className={styles.outfitSlotImage}
+                                  />
+                                  <div className={styles.outfitSlotLabel}>
+                                    {item.name ?? label}
+                                  </div>
+                                </>
+                              ) : (
+                                <div className={styles.outfitSlotEmpty}>
+                                  <Icon size={20} className={styles.outfitSlotEmptyIcon} />
+                                  <span>{label}</span>
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                          );
+                        })}
+                      </div>
+
+                      <div className={styles.optionalColumn}>
+                        {OPTIONAL_SLOTS.map(({ key, label, icon: Icon }) => {
+                          const item = (outfit as any)?.[key] ?? null;
+                          return (
+                            <div
+                              key={key}
+                              className={`
+                                ${styles.outfitSlot} 
+                                ${styles.outfitSlotOptional}
+                                ${item ? styles.outfitSlotFilled : ''} 
+                                ${!outfitLoading ? styles.outfitSlotClickable : ''}
+                              `}
+                              onClick={() => !outfitLoading && handleSwapPiece(key)}
+                              title={`Swap ${label}`}
+                            >
+                              {item ? (
+                                <>
+                                  <img
+                                    src={item.photo_url}
+                                    alt={item.name ?? label}
+                                    className={styles.outfitSlotImage}
+                                  />
+                                  <div className={styles.outfitSlotLabel}>
+                                    {item.name ?? label}
+                                  </div>
+                                </>
+                              ) : (
+                                <div className={styles.outfitSlotEmpty}>
+                                  <Icon size={16} className={styles.outfitSlotEmptyIcon} />
+                                  <span style={{ fontSize: '0.65rem' }}>{label}</span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </>
                 ) : null}
               </div>
             )}
-            
+
             {/* Regenerate Button */}
             {outfit && !outfitLoading && (
               <div className={styles.regenerateBar}>
@@ -233,7 +339,7 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
             )}
           </div>
         </div>
-        
+
         {/* Right Panel - Mood + Wardrobe + FAB */}
         <div className={styles.rightPanel}>
           {/* Mood Card */}
@@ -241,7 +347,7 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
             <div className={styles.cardHeader}>
               <span className={styles.cardTitle}>How are you feeling?</span>
             </div>
-            
+
             <form className={styles.moodForm} onSubmit={handleMoodSubmit}>
               <div className={styles.moodInputRow}>
                 <input
@@ -252,8 +358,8 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
                   onChange={(e) => setMood(e.target.value)}
                   disabled={outfitLoading}
                 />
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className={`${styles.button} ${styles.buttonAccent} ${styles.moodSubmitButton}`}
                   disabled={outfitLoading || !mood.trim()}
                 >
@@ -305,8 +411,8 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
             </div>
             <div className={styles.wardrobeMasonry}>
               {clothingItems.slice(0, 10).map((item) => (
-                <div 
-                  key={item.id} 
+                <div
+                  key={item.id}
                   className={styles.wardrobeItem}
                 >
                   <img
@@ -323,18 +429,28 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
           </div>
         </div>
       </div>
-      
+
       {/* FAB */}
       <button className={styles.fab} onClick={() => setIsSlidePanelOpen(true)}>
         <Plus size={20} />
         Add to Wardrobe
       </button>
-      
+
       {/* Slide Panel */}
       <WardrobeSlidePanel
         isOpen={isSlidePanelOpen}
         onClose={() => setIsSlidePanelOpen(false)}
         onUploadComplete={() => window.location.reload()}
+      />
+
+      {/* Piece Swap Modal */}
+      <PieceSwapModal
+        isOpen={isSwapModalOpen}
+        onClose={() => setIsSwapModalOpen(false)}
+        category={currentSwapSlot || ''}
+        items={getAlternatives()}
+        currentId={currentSwapSlot ? outfit?.[currentSwapSlot]?.id : undefined}
+        onSelect={handleSelectAlternative}
       />
     </div>
   );
@@ -345,7 +461,7 @@ function Header({ userInitial }: { userInitial: string }) {
     <header className={styles.header}>
       <div className={styles.headerContent}>
         <a href="/dashboard" className={styles.logo}>DR!P</a>
-        
+
         <nav className={styles.navLinks}>
           <a href="/dashboard" className={`${styles.navLink} ${styles.navLinkActive}`}>
             <Home size={16} className={styles.navIcon} />
@@ -360,13 +476,13 @@ function Header({ userInitial }: { userInitial: string }) {
             History
           </a>
         </nav>
-        
+
         <div className={styles.headerActions}>
           <div className={styles.userMenu}>
             <span className={styles.userName}>My Wardrobe</span>
             <div className={styles.userAvatar}>{userInitial}</div>
           </div>
-          
+
           <form action={logout}>
             <button type="submit" className={styles.logoutButton}>
               <LogOut size={16} />

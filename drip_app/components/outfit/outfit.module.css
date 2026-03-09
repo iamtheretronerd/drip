@@ -1,0 +1,204 @@
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.modalContent {
+    width: 100%;
+    max-width: 600px;
+    background: #1a1a1a;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px 24px 0 0;
+    padding: 1.5rem;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modalTitle {
+    font-family: 'Cooper Black', serif;
+    font-size: 1.5rem;
+    color: #fff;
+    margin: 0;
+}
+
+.modalSubtitle {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+}
+
+.closeButton {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.closeButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.itemGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+    overflow-y: auto;
+    padding-bottom: 2rem;
+}
+
+.itemCard {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 0.5rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.itemCard:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.itemCardActive {
+    border-color: #9B8FD6;
+    background: rgba(155, 143, 214, 0.1);
+}
+
+.imageWrapper {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.recommendedBadge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #9B8FD6;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.itemImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.itemInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.itemName {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.itemMetadata {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.emptyState {
+    grid-column: 1 / -1;
+    padding: 4rem 1rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.noneCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    aspect-ratio: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.noneCard:hover {
+    background: rgba(217, 66, 66, 0.05);
+    border-color: rgba(217, 66, 66, 0.3);
+    color: #D94242;
+}
+
+.noneIcon {
+    opacity: 0.5;
+}
+
+.noneText {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+@media (min-width: 768px) {
+    .modalOverlay {
+        align-items: center;
+    }
+
+    .modalContent {
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        max-height: 70vh;
+    }
+}

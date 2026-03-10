@@ -206,13 +206,15 @@
 }
 
 .buttonAccent {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  color: #ffffff;
+  background: linear-gradient(135deg, #F7E24A, #F5B847, #D94242);
+  color: #1A1A1A;
+  font-weight: 800;
 }
 
 .buttonAccent:hover:not(:disabled) {
-  background: linear-gradient(135deg, #5558e6, #7c3aed);
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(247, 226, 74, 0.3);
+  filter: brightness(1.1);
 }
 
 /* ─── FAB ────────────────────────────────────────────────────────────────────── */
@@ -1143,23 +1145,84 @@
 }
 
 /* ─── Actions ─────────────────────────────────────────────────────────────────── */
-.actionGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+.actionSection {
   margin-top: 2rem;
   width: 100%;
 }
 
+.actionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+}
+
+.loggedState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(247, 226, 74, 0.08);
+  border: 1px solid rgba(247, 226, 74, 0.3);
+  padding: 1.5rem;
+  border-radius: 24px;
+  animation: fadeIn 0.4s ease;
+  box-shadow: 0 0 50px rgba(247, 226, 74, 0.1);
+}
+
+.loggedBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #F7E24A;
+  font-weight: 800;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.unlogButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+}
+
+.unlogButton:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .buttonOutline {
   background: transparent !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: #ffffff !important;
+  border: 1px solid rgba(247, 226, 74, 0.4) !important;
+  color: #F7E24A !important;
+  font-weight: 600;
 }
 
 .buttonOutline:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-color: rgba(255, 255, 255, 0.4) !important;
+  background: rgba(247, 226, 74, 0.1) !important;
+  border-color: #F7E24A !important;
 }
 
 .buttonSuccess {

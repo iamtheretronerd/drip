@@ -22,15 +22,24 @@ export default async function WardrobePage() {
 
   if (!user) redirect('/login');
 
-  // Fetch clothing items
+  // Fetch clothing items and profile in parallel
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: clothingData } = await (supabase.from('clothing_items') as any)
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('status', 'analyzed')
-    .order('created_at', { ascending: false });
+  const [itemsRes, profileRes] = await Promise.all([
+    (supabase.from('clothing_items') as any)
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('status', 'analyzed')
+      .order('created_at', { ascending: false }),
+    (supabase.from('profiles') as any)
+      .select('*')
+      .eq('id', user.id)
+      .single()
+  ]);
 
-  const clothingItems = (clothingData ?? []) as ClothingItem[];
+  const clothingItems = (itemsRes.data ?? []) as ClothingItem[];
+  const profile = profileRes.data;
 
-  return <WardrobeView clothingItems={clothingItems} />;
+  if (!profile) redirect('/onboarding');
+
+  return <WardrobeView clothingItems={clothingItems} profile={profile} />;
 }

@@ -2,15 +2,17 @@
 
 import { useState, useTransition, useRef, useEffect } from 'react';
 import { ArrowLeft, Plus, Shirt, Trash2, Edit2, Search, FilterX, ChevronDown } from 'lucide-react';
-import type { ClothingItem } from '@/types/database';
-import styles from './wardrobe.module.css';
+import { Header } from '@/components/shared/Header';
+import type { ClothingItem, Profile } from '@/types/database';
 import { deleteClothingItem, updateClothingItem } from '@/lib/actions/clothing';
 import { ClothingEditModal } from '@/components/clothing/ClothingEditModal';
 import type { ClothingAnalysis } from '@/components/clothing/ClothingAnalysisModal';
 import { WardrobeSlidePanel } from '@/components/dashboard/WardrobeSlidePanel';
+import styles from './wardrobe.module.css';
 
 interface WardrobeViewProps {
   clothingItems: ClothingItem[];
+  profile: Profile;
 }
 
 const TYPES = ['all', 'top', 'bottom', 'outerwear', 'shoes', 'accessory'];
@@ -72,7 +74,7 @@ function CustomDropdown({ value, onChange, options }: CustomDropdownProps) {
   );
 }
 
-export function WardrobeView({ clothingItems }: WardrobeViewProps) {
+export function WardrobeView({ clothingItems, profile }: WardrobeViewProps) {
   // Filter States
   const [searchQuery, setSearchQuery] = useState('');
   const [activeType, setActiveType] = useState('all');
@@ -184,6 +186,7 @@ export function WardrobeView({ clothingItems }: WardrobeViewProps) {
 
   return (
     <div className={styles.root}>
+      <Header profile={profile} />
       {/* Header */}
       <header className={styles.header}>
         <div className={styles.headerContent}>
@@ -378,6 +381,12 @@ export function WardrobeView({ clothingItems }: WardrobeViewProps) {
         onClose={() => setIsSlidePanelOpen(false)}
         onUploadComplete={() => window.location.reload()}
       />
+
+      {/* FAB */}
+      <button className={styles.fab} onClick={() => setIsSlidePanelOpen(true)}>
+        <Plus size={20} />
+        <span>Add to Wardrobe</span>
+      </button>
     </div>
   );
 }

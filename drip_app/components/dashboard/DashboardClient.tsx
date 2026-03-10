@@ -22,12 +22,14 @@ import {
   Thermometer,
   Wind,
   Droplets,
+  Undo2,
 } from 'lucide-react';
+import { Header } from '@/components/shared/Header';
 import Grainient from '@/components/Grainient';
 import { WardrobeSlidePanel } from './WardrobeSlidePanel';
 import { PieceSwapModal } from '@/components/outfit/PieceSwapModal';
 import { filterWardrobe, getSwapAlternatives, isOnePiece } from '@/lib/outfit-engine';
-import { logOutfit } from '@/lib/actions/outfit_logs';
+import { logOutfit, unlogOutfit } from '@/lib/actions/outfit_logs';
 import { WeatherSnapshot } from '@/types/database';
 import styles from './dashboard.module.css';
 
@@ -74,6 +76,7 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
   const [wasModified, setWasModified] = useState(false);
   const [isLogging, setIsLogging] = useState(false);
   const [lastLoggedDate, setLastLoggedDate] = useState<string | null>(null);
+  const [isLoggedOutfitCurrent, setIsLoggedOutfitCurrent] = useState(true);
 
   useEffect(() => {
     async function fetchWeather() {
@@ -96,6 +99,50 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
     fetchWeather();
   }, [profile.lat, profile.lon]);
 
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const log = recentLogs.find(l => l.date === today);
+
+    if (log) {
+      setLastLoggedDate(today);
+      // Reconstruct outfit from log item IDs
+      const items = log.item_ids.map(id => clothingItems.find(i => i.id === id)).filter(Boolean) as ClothingItem[];
+      const reconstructed: OutfitSuggestion = {
+        reasoning: "The outfit you're wearing today!",
+        top: items.find(i => i.type === 'top') || null,
+        bottom: items.find(i => i.type === 'bottom') || null,
+        shoes: items.find(i => i.type === 'shoes') || null,
+        outerwear: items.find(i => i.type === 'outerwear') || null,
+        accessory1: items.filter(i => i.type === 'accessory')[0] || null,
+        accessory2: items.filter(i => i.type === 'accessory')[1] || null,
+      };
+      setOutfit(reconstructed);
+      setIsLoggedOutfitCurrent(true);
+    } else {
+      // If no log, try to load from localStorage (last generated suggestion)
+      const saved = localStorage.getItem('drip_current_outfit');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          // Only use if outfit is not already set
+          if (!outfit) {
+            setOutfit(parsed);
+            setIsLoggedOutfitCurrent(false);
+          }
+        } catch (e) {
+          console.error("Failed to parse saved outfit", e);
+        }
+      }
+    }
+  }, [recentLogs, clothingItems]);
+
+  // Save to localStorage whenever outfit changes manually or by AI
+  useEffect(() => {
+    if (outfit && !outfitLoading) {
+      localStorage.setItem('drip_current_outfit', JSON.stringify(outfit));
+    }
+  }, [outfit, outfitLoading]);
+
   const generateOutfit = useCallback(
     async (moodText?: string) => {
       if (clothingItems.length === 0) return;
@@ -115,6 +162,7 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
           if (!data.error) {
             setOutfit(data);
             setWasModified(false);
+            setIsLoggedOutfitCurrent(false);
           }
         }
       } catch (err) {
@@ -151,6 +199,7 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
       [currentSwapSlot]: item,
     });
     setWasModified(true);
+    setIsLoggedOutfitCurrent(false);
     setIsSwapModalOpen(false);
   };
 
@@ -178,7 +227,8 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
 
       const result = await logOutfit(itemIds, weatherSnapshot, mood || null, wasModified);
       if (result.success) {
-        setLastLoggedDate(new Date().toDateString());
+        setLastLoggedDate(new Date().toISOString().split('T')[0]);
+        setIsLoggedOutfitCurrent(true);
         // Toast or success state?
       } else {
         alert(result.error || 'Failed to log outfit');
@@ -190,17 +240,34 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
     }
   };
 
+  const handleUnlog = async () => {
+    if (isLogging) return;
+    setIsLogging(true);
+    try {
+      const result = await unlogOutfit();
+      if (result.success) {
+        setLastLoggedDate(null);
+      } else {
+        alert(result.error || 'Failed to undo');
+      }
+    } catch (err) {
+      console.error('Unlog error:', err);
+    } finally {
+      setIsLogging(false);
+    }
+  };
+
   const handleMoodSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (mood.trim()) generateOutfit(mood.trim());
   };
 
-  const userInitial = profile.full_name?.charAt(0).toUpperCase() || 'U';
+
 
   if (clothingItems.length === 0) {
     return (
       <div className={styles.dashboardRoot}>
-        <Header userInitial={userInitial} />
+        <Header profile={profile} />
         <div className={styles.emptyState}>
           <div className={styles.emptyStateIcon}>
             <Sparkles size={40} />
@@ -225,7 +292,7 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
 
   return (
     <div className={styles.dashboardRoot}>
-      <Header userInitial={userInitial} />
+      <Header profile={profile} />
 
       <div className={styles.layout}>
         {/* Left Panel - Grainient + Weather + Outfit */}
@@ -369,34 +436,46 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
 
             {/* Action Bar */}
             {outfit && !outfitLoading && (
-              <div className={styles.actionGrid}>
-                <button
-                  className={`${styles.button} ${styles.buttonOutline}`}
-                  onClick={() => generateOutfit()}
-                  disabled={isLogging}
-                >
-                  <RefreshCw size={16} />
-                  Regenerate
-                </button>
-
-                {lastLoggedDate === new Date().toDateString() ? (
-                  <button className={`${styles.button} ${styles.buttonSuccess}`} disabled>
-                    <CheckCircle2 size={16} />
-                    Logged for Today
-                  </button>
+              <div className={styles.actionSection}>
+                {lastLoggedDate === new Date().toISOString().split('T')[0] && isLoggedOutfitCurrent ? (
+                  <div className={styles.loggedState}>
+                    <div className={styles.loggedBadge}>
+                      <CheckCircle2 size={18} />
+                      <span>Outfit Logged for Today!</span>
+                    </div>
+                    <button
+                      className={styles.unlogButton}
+                      onClick={handleUnlog}
+                      disabled={isLogging}
+                    >
+                      <Undo2 size={14} />
+                      <span>Changed my mind</span>
+                    </button>
+                  </div>
                 ) : (
-                  <button
-                    className={`${styles.button} ${styles.buttonAccent}`}
-                    onClick={handleLogOutfit}
-                    disabled={isLogging}
-                  >
-                    {isLogging ? (
-                      <div className={styles.spinnerSmall} />
-                    ) : (
-                      <Check size={16} />
-                    )}
-                    I'm Wearing This
-                  </button>
+                  <div className={styles.actionGrid}>
+                    <button
+                      className={`${styles.button} ${styles.buttonOutline}`}
+                      onClick={() => generateOutfit()}
+                      disabled={isLogging}
+                    >
+                      <RefreshCw size={16} />
+                      Regenerate
+                    </button>
+
+                    <button
+                      className={`${styles.button} ${styles.buttonAccent}`}
+                      onClick={handleLogOutfit}
+                      disabled={isLogging}
+                    >
+                      {isLogging ? (
+                        <div className={styles.spinnerSmall} />
+                      ) : (
+                        <Check size={16} />
+                      )}
+                      {lastLoggedDate === new Date().toISOString().split('T')[0] ? 'Change to this outfit' : "I'm Wearing This"}
+                    </button>
+                  </div>
                 )}
               </div>
             )}
@@ -519,40 +598,4 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
   );
 }
 
-function Header({ userInitial }: { userInitial: string }) {
-  return (
-    <header className={styles.header}>
-      <div className={styles.headerContent}>
-        <a href="/dashboard" className={styles.logo}>DR!P</a>
 
-        <nav className={styles.navLinks}>
-          <a href="/dashboard" className={`${styles.navLink} ${styles.navLinkActive}`}>
-            <Home size={16} className={styles.navIcon} />
-            Today
-          </a>
-          <a href="/wardrobe" className={styles.navLink}>
-            <Shirt size={16} className={styles.navIcon} />
-            Wardrobe
-          </a>
-          <a href="/history" className={styles.navLink}>
-            <History size={16} className={styles.navIcon} />
-            History
-          </a>
-        </nav>
-
-        <div className={styles.headerActions}>
-          <div className={styles.userMenu}>
-            <span className={styles.userName}>My Wardrobe</span>
-            <div className={styles.userAvatar}>{userInitial}</div>
-          </div>
-
-          <form action={logout}>
-            <button type="submit" className={styles.logoutButton}>
-              <LogOut size={16} />
-            </button>
-          </form>
-        </div>
-      </div>
-    </header>
-  );
-}

@@ -148,7 +148,8 @@ export function HistoryClient({ profile, clothingItems, outfitLogs }: HistoryCli
                 }
             }
 
-            const result = await logOutfit(retroSelectedIds, pastWeather, null, true, retroLogDate);
+            // Pass 'Historical log' so it explicitly marks it as manual
+            const result = await logOutfit(retroSelectedIds, pastWeather, 'Historical log', true, retroLogDate);
             if (result.success) {
                 closeRetroLog();
                 window.location.reload(); // Refresh to show new log
@@ -210,7 +211,13 @@ export function HistoryClient({ profile, clothingItems, outfitLogs }: HistoryCli
                         if (!dayObj.day) return <div key={`empty-${index}`} className={styles.dayCell} />;
 
                         const log = dayObj.dateStr ? logsByDate.get(dayObj.dateStr) : null;
-                        const isToday = new Date().toDateString() === new Date(year, month, dayObj.day).toDateString();
+
+                        const cellDate = new Date(year, month, dayObj.day);
+                        const todayDate = new Date();
+                        todayDate.setHours(0, 0, 0, 0);
+
+                        const isToday = todayDate.getTime() === cellDate.getTime();
+                        const isFuture = cellDate.getTime() > todayDate.getTime();
 
                         return (
                             <div
@@ -219,18 +226,19 @@ export function HistoryClient({ profile, clothingItems, outfitLogs }: HistoryCli
                   ${styles.dayCell} 
                   ${isToday ? styles.dayCellToday : ''} 
                   ${log ? styles.dayCellHasOutfit : ''}
+                  ${isFuture && !log ? styles.dayCellFuture : ''}
                 `}
                                 onClick={() => {
                                     if (log) {
                                         setSelectedLog(log);
-                                    } else if (dayObj.dateStr) {
+                                    } else if (dayObj.dateStr && !isFuture) {
                                         setRetroLogDate(dayObj.dateStr);
                                     }
                                 }}
                             >
                                 <span className={styles.dayNumber}>{dayObj.day}</span>
 
-                                {!log && dayObj.dateStr && (
+                                {!log && dayObj.dateStr && !isFuture && (
                                     <Plus size={16} className={styles.addIcon} />
                                 )}
 
@@ -275,17 +283,6 @@ export function HistoryClient({ profile, clothingItems, outfitLogs }: HistoryCli
                                     day: 'numeric'
                                 })}
                             </h2>
-                            {selectedLog.mood_input && selectedLog.mood_input !== "Historical log" && (
-                                <div className={styles.detailMood}>
-                                    <Sparkles size={18} />
-                                    <span>Feeling {selectedLog.mood_input}</span>
-                                </div>
-                            )}
-                            {selectedLog.mood_input === null && selectedLog.weather_snapshot && (
-                                <div className={styles.detailMood} style={{ color: 'rgba(255,255,255,0.6)' }}>
-                                    <span>{Math.round(selectedLog.weather_snapshot.temp)}°C &bull; {selectedLog.weather_snapshot.description}</span>
-                                </div>
-                            )}
                         </div>
 
                         <div className={styles.detailBody}>
@@ -332,7 +329,7 @@ export function HistoryClient({ profile, clothingItems, outfitLogs }: HistoryCli
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>
                                             <Info size={16} />
                                             <span style={{ fontSize: '0.9rem' }}>
-                                                {(selectedLog.mood_input === null || selectedLog.mood_input === 'Historical log')
+                                                {selectedLog.mood_input === 'Historical log'
                                                     ? 'Logged manually by you'
                                                     : selectedLog.was_modified
                                                         ? 'Personalized choice'
@@ -361,9 +358,6 @@ export function HistoryClient({ profile, clothingItems, outfitLogs }: HistoryCli
                                     <span>What did you wear on {retroLogDate}?</span>
                                 </div>
                             </div>
-                            <button className={styles.closeBtn} onClick={closeRetroLog}>
-                                <X size={20} />
-                            </button>
                         </header>
 
                         <div className={styles.retroLogContent}>

@@ -29,7 +29,7 @@ import Grainient from '@/components/Grainient';
 import { ForecastBar } from '@/components/weather/ForecastBar';
 import { WardrobeSlidePanel } from './WardrobeSlidePanel';
 import { PieceSwapModal } from '@/components/outfit/PieceSwapModal';
-import { filterWardrobe, getSwapAlternatives, isOnePiece } from '@/lib/outfit-engine';
+import { filterWardrobe, getSwapAlternatives, isOnePiece, isJacketLike, isAccessory } from '@/lib/outfit-engine';
 import { logOutfit, unlogOutfit } from '@/lib/actions/outfit_logs';
 import { WeatherSnapshot } from '@/types/database';
 import type { ForecastDay } from '@/types/weather';
@@ -81,6 +81,7 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
   const [isLoggedOutfitCurrent, setIsLoggedOutfitCurrent] = useState(true);
   // null = viewing today, ForecastDay = viewing a future day
   const [selectedDay, setSelectedDay] = useState<ForecastDay | null>(null);
+  const [outfitsByDate, setOutfitsByDate] = useState<Record<string, OutfitSuggestion>>({});
 
   useEffect(() => {
     async function fetchWeather() {
@@ -107,45 +108,72 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
     const today = new Date().toISOString().split('T')[0];
     const log = recentLogs.find(l => l.date === today);
 
+    let storedCache: Record<string, OutfitSuggestion> = {};
+    const saved = localStorage.getItem('drip_weekly_outfits');
+    if (saved) {
+      try { storedCache = JSON.parse(saved); } catch (e) { }
+    }
+
     if (log) {
       setLastLoggedDate(today);
       // Reconstruct outfit from log item IDs
       const items = log.item_ids.map(id => clothingItems.find(i => i.id === id)).filter(Boolean) as ClothingItem[];
       const reconstructed: OutfitSuggestion = {
         reasoning: "The outfit you're wearing today!",
-        top: items.find(i => i.type === 'top') || null,
+        top: items.find(i => i.type === 'top' || isOnePiece(i)) || null,
         bottom: items.find(i => i.type === 'bottom') || null,
         shoes: items.find(i => i.type === 'shoes') || null,
-        outerwear: items.find(i => i.type === 'outerwear') || null,
-        accessory1: items.filter(i => i.type === 'accessory')[0] || null,
-        accessory2: items.filter(i => i.type === 'accessory')[1] || null,
+        outerwear: items.find(i => i.type === 'outerwear' || isJacketLike(i)) || null,
+        accessory1: items.filter(i => i.type === 'accessory' || isAccessory(i))[0] || null,
+        accessory2: items.filter(i => i.type === 'accessory' || isAccessory(i))[1] || null,
       };
-      setOutfit(reconstructed);
-      setIsLoggedOutfitCurrent(true);
+
+      if (!outfit) {
+        setOutfit(reconstructed);
+        setIsLoggedOutfitCurrent(true);
+      }
+      storedCache[today] = reconstructed;
     } else {
-      // If no log, try to load from localStorage (last generated suggestion)
-      const saved = localStorage.getItem('drip_current_outfit');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          // Only use if outfit is not already set
-          if (!outfit) {
-            setOutfit(parsed);
-            setIsLoggedOutfitCurrent(false);
-          }
-        } catch (e) {
-          console.error("Failed to parse saved outfit", e);
+      // Check cache first
+      if (storedCache[today]) {
+        if (!outfit) {
+          setOutfit(storedCache[today]);
+          setIsLoggedOutfitCurrent(false);
+        }
+      } else {
+        // Fallback backward compatibility
+        const legacy = localStorage.getItem('drip_current_outfit');
+        if (legacy) {
+          try {
+            const parsed = JSON.parse(legacy);
+            if (!outfit) {
+              setOutfit(parsed);
+              setIsLoggedOutfitCurrent(false);
+            }
+            storedCache[today] = parsed;
+          } catch (e) { }
         }
       }
     }
+
+    setOutfitsByDate(storedCache);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recentLogs, clothingItems]);
 
   // Save to localStorage whenever outfit changes manually or by AI
   useEffect(() => {
     if (outfit && !outfitLoading) {
-      localStorage.setItem('drip_current_outfit', JSON.stringify(outfit));
+      const today = new Date().toISOString().split('T')[0];
+      const dateKey = selectedDay?.date ?? today;
+
+      setOutfitsByDate(prev => {
+        const next = { ...prev, [dateKey]: outfit };
+        localStorage.setItem('drip_weekly_outfits', JSON.stringify(next));
+        return next;
+      });
+      localStorage.setItem('drip_current_outfit', JSON.stringify(outfit)); // backwards compatibility
     }
-  }, [outfit, outfitLoading]);
+  }, [outfit, outfitLoading, selectedDay]);
 
   // When a future day is selected, generate outfit using that day's weather
   const generateOutfit = useCallback(
@@ -185,8 +213,19 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
   // When the user taps a day in the forecast bar
   const handleSelectDay = (day: ForecastDay | null) => {
     setSelectedDay(day);
-    // Immediately generate an outfit optimised for that day
-    generateOutfit(mood || undefined, day);
+
+    const today = new Date().toISOString().split('T')[0];
+    const dateKey = day ? day.date : today;
+
+    setWasModified(false);
+
+    if (outfitsByDate[dateKey]) {
+      setOutfit(outfitsByDate[dateKey]);
+      setIsLoggedOutfitCurrent(lastLoggedDate === dateKey); // Approximate flag recovery
+    } else {
+      // Immediately generate an outfit optimised for that day if not cached
+      generateOutfit(mood || undefined, day);
+    }
   };
 
   const handleSwapPiece = (slot: typeof ALL_SLOTS[number]['key']) => {

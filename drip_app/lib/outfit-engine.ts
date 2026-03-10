@@ -14,7 +14,8 @@ type Category = 'top' | 'bottom' | 'shoes' | 'outerwear' | 'accessory1' | 'acces
 
 const JACKET_TERMS = ['jacket', 'coat', 'hoodie', 'blazer', 'cardigan', 'outer', 'vest'];
 
-export const isJacketLike = (item: ClothingItem) => {
+export const isJacketLike = (item: ClothingItem | null | undefined) => {
+  if (!item) return false;
   const name = (item.name || '').toLowerCase();
   const subType = (item.sub_type || '').toLowerCase();
   return JACKET_TERMS.some(term => name.includes(term) || subType.includes(term));
@@ -22,7 +23,8 @@ export const isJacketLike = (item: ClothingItem) => {
 
 const ONE_PIECE_TERMS = ['dress', 'jumpsuit', 'romper', 'gown', 'bodysuit', 'onesie'];
 
-export const isOnePiece = (item: ClothingItem) => {
+export const isOnePiece = (item: ClothingItem | null | undefined) => {
+  if (!item) return false;
   const name = (item.name || '').toLowerCase();
   const subType = (item.sub_type || '').toLowerCase();
   const type = (item.type || '').toLowerCase();
@@ -33,7 +35,8 @@ export const isOnePiece = (item: ClothingItem) => {
   );
 };
 
-export const isAccessory = (item: ClothingItem) => {
+export const isAccessory = (item: ClothingItem | null | undefined) => {
+  if (!item) return false;
   const type = (item.type || '').toLowerCase();
   return type === 'accessory' || type === 'accessories';
 };

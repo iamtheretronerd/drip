@@ -136,6 +136,13 @@
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
 }
 
+.dayCellFuture {
+    opacity: 0.3;
+    cursor: default;
+    background: transparent;
+    border-color: transparent;
+}
+
 .outfitPreview {
     flex: 1;
     display: grid;

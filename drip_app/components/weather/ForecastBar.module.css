@@ -1,0 +1,109 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.4);
+    margin: 0;
+}
+
+.strip {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.strip::-webkit-scrollbar {
+    display: none;
+}
+
+/* ─── Day Pill ─────────────────────────────────────────────────────────────── */
+.pill {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 0.5rem 0.75rem;
+    border-radius: 16px;
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    min-width: 60px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.pill:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.18);
+    transform: translateY(-2px);
+}
+
+/* Today highlighted in yellow */
+.today {
+    border-color: rgba(247, 226, 74, 0.4);
+    background: rgba(247, 226, 74, 0.08);
+}
+
+/* Selected future day glows purple */
+.selected:not(.today) {
+    border-color: rgba(155, 143, 214, 0.6);
+    background: rgba(155, 143, 214, 0.12);
+    box-shadow: 0 0 16px rgba(155, 143, 214, 0.15);
+}
+
+/* Selected today stays yellow */
+.selected.today {
+    border-color: rgba(247, 226, 74, 0.7);
+    background: rgba(247, 226, 74, 0.14);
+    box-shadow: 0 0 16px rgba(247, 226, 74, 0.2);
+}
+
+/* ─── Pill Contents ─────────────────────────────────────────────────────────── */
+.dayLabel {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.today .dayLabel {
+    color: #F7E24A;
+}
+
+.icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.high {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.low {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.rain {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: #4facfe;
+    margin-top: 2px;
+}

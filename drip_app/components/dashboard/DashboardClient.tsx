@@ -26,11 +26,13 @@ import {
 } from 'lucide-react';
 import { Header } from '@/components/shared/Header';
 import Grainient from '@/components/Grainient';
+import { ForecastBar } from '@/components/weather/ForecastBar';
 import { WardrobeSlidePanel } from './WardrobeSlidePanel';
 import { PieceSwapModal } from '@/components/outfit/PieceSwapModal';
 import { filterWardrobe, getSwapAlternatives, isOnePiece } from '@/lib/outfit-engine';
 import { logOutfit, unlogOutfit } from '@/lib/actions/outfit_logs';
 import { WeatherSnapshot } from '@/types/database';
+import type { ForecastDay } from '@/types/weather';
 import styles from './dashboard.module.css';
 
 interface DashboardClientProps {
@@ -77,6 +79,8 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
   const [isLogging, setIsLogging] = useState(false);
   const [lastLoggedDate, setLastLoggedDate] = useState<string | null>(null);
   const [isLoggedOutfitCurrent, setIsLoggedOutfitCurrent] = useState(true);
+  // null = viewing today, ForecastDay = viewing a future day
+  const [selectedDay, setSelectedDay] = useState<ForecastDay | null>(null);
 
   useEffect(() => {
     async function fetchWeather() {
@@ -143,18 +147,22 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
     }
   }, [outfit, outfitLoading]);
 
+  // When a future day is selected, generate outfit using that day's weather
   const generateOutfit = useCallback(
-    async (moodText?: string) => {
+    async (moodText?: string, forecastDay?: ForecastDay | null) => {
       if (clothingItems.length === 0) return;
       setOutfitLoading(true);
+      const weatherForGeneration = forecastDay
+        ? { ...weather, temp: (forecastDay.tempMax + forecastDay.tempMin) / 2, description: forecastDay.description, icon: forecastDay.icon }
+        : weather;
       try {
         const res = await fetch('/api/generate-outfit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             mood: moodText,
-            weather,
-            seed: Math.random() // Break determinism
+            weather: weatherForGeneration,
+            seed: Math.random()
           }),
         });
         if (res.ok) {
@@ -173,6 +181,13 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
     },
     [weather, clothingItems.length]
   );
+
+  // When the user taps a day in the forecast bar
+  const handleSelectDay = (day: ForecastDay | null) => {
+    setSelectedDay(day);
+    // Immediately generate an outfit optimised for that day
+    generateOutfit(mood || undefined, day);
+  };
 
   const handleSwapPiece = (slot: typeof ALL_SLOTS[number]['key']) => {
     setCurrentSwapSlot(slot);
@@ -338,6 +353,31 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
               )}
             </div>
 
+            {/* 7-Day Forecast Bar */}
+            {weather?.forecast && weather.forecast.length > 0 && (
+              <ForecastBar
+                forecast={weather.forecast}
+                selectedDate={selectedDay?.date ?? null}
+                onSelectDay={handleSelectDay}
+              />
+            )}
+
+            {/* Planning banner for future days */}
+            {selectedDay && (
+              <div className={styles.planningBanner}>
+                <span className={styles.planningEmoji}>
+                  {selectedDay.description.includes('rain') || selectedDay.description.includes('drizzle') ? '🌧️'
+                    : selectedDay.description.includes('cloud') ? '☁️'
+                      : selectedDay.description.includes('snow') ? '❄️'
+                        : '☀️'}
+                </span>
+                <div className={styles.planningText}>
+                  <span className={styles.planningTitle}>Planning for {selectedDay.day}</span>
+                  <span className={styles.planningSubtitle}>{selectedDay.tempMax}° high • {selectedDay.description}</span>
+                </div>
+              </div>
+            )}
+
             {/* Outfit Display - Only when generated */}
             {(outfitLoading || outfit) && (
               <div className={styles.outfitContainer}>
@@ -437,7 +477,15 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
             {/* Action Bar */}
             {outfit && !outfitLoading && (
               <div className={styles.actionSection}>
-                {lastLoggedDate === new Date().toISOString().split('T')[0] && isLoggedOutfitCurrent ? (
+                {/* Future day: show a friendly note instead of log buttons */}
+                {selectedDay ? (
+                  <div className={styles.planningNote}>
+                    <span>This is a preview for {selectedDay.day} — come back on the day to log it! 🗓️</span>
+                    <button className={styles.unlogButton} onClick={() => handleSelectDay(null)}>
+                      Back to Today
+                    </button>
+                  </div>
+                ) : lastLoggedDate === new Date().toISOString().split('T')[0] && isLoggedOutfitCurrent ? (
                   <div className={styles.loggedState}>
                     <div className={styles.loggedBadge}>
                       <CheckCircle2 size={18} />

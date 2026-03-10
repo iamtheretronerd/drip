@@ -86,35 +86,117 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(weatherData);
     }
 
-    // Fetch current weather and forecast in parallel
-    const [currentRes, forecastRes] = await Promise.all([
+    // Hybrid: OWM for days 1-5 (better accuracy), Open-Meteo for days 6-7 (free extension)
+    const [currentRes, owmForecastRes, omForecastRes] = await Promise.all([
       fetch(
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`,
         { next: { revalidate: CACHE_DURATION } }
       ),
+      // OWM 5-day / 3-hour forecast (40 entries = 5 days)
       fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&cnt=8&appid=${OPENWEATHER_API_KEY}`,
+        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&cnt=40&appid=${OPENWEATHER_API_KEY}`,
+        { next: { revalidate: CACHE_DURATION } }
+      ),
+      // Open-Meteo 7-day (we only use days 6+7 from this)
+      fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=7`,
         { next: { revalidate: CACHE_DURATION } }
       ),
     ]);
 
-    if (!currentRes.ok || !forecastRes.ok) {
-      return NextResponse.json(
-        { error: 'Failed to fetch weather data' },
-        { status: 502 }
-      );
+    if (!currentRes.ok) {
+      return NextResponse.json({ error: 'Failed to fetch weather data' }, { status: 502 });
     }
 
-    const [current, forecast] = await Promise.all([
-      currentRes.json(),
-      forecastRes.json(),
-    ]);
+    const current = await currentRes.json();
 
-    // Calculate max precipitation probability from forecast
-    const precipitationChance = Math.max(
-      0,
-      ...forecast.list.map((item: { pop?: number }) => Math.round((item.pop ?? 0) * 100))
-    );
+    // ── OWM days 1-5 ──────────────────────────────────────────────────────
+    const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    interface OWMEntry { dt_txt: string; main: { temp_max: number; temp_min: number }; weather: { icon: string; description: string }[]; pop?: number }
+    let owmDays: { date: string; day: string; isToday: boolean; tempMax: number; tempMin: number; icon: string; description: string; precipChance: number }[] = [];
+
+    if (owmForecastRes.ok) {
+      const owmRaw = await owmForecastRes.json();
+      const byDate = new Map<string, { temps: number[]; icons: string[]; descs: string[]; pops: number[] }>();
+
+      for (const entry of owmRaw.list as OWMEntry[]) {
+        const dateStr = entry.dt_txt.split(' ')[0];
+        if (!byDate.has(dateStr)) byDate.set(dateStr, { temps: [], icons: [], descs: [], pops: [] });
+        const d = byDate.get(dateStr)!;
+        d.temps.push(entry.main.temp_max, entry.main.temp_min);
+        d.icons.push(entry.weather[0].icon);
+        d.descs.push(entry.weather[0].description);
+        d.pops.push(Math.round((entry.pop ?? 0) * 100));
+      }
+
+      owmDays = Array.from(byDate.entries()).map(([dateStr, d]) => {
+        const dayIndex = new Date(dateStr + 'T12:00:00').getDay();
+        return {
+          date: dateStr,
+          day: dateStr === todayStr ? 'Today' : DAY_LABELS[dayIndex],
+          isToday: dateStr === todayStr,
+          tempMax: Math.round(Math.max(...d.temps)),
+          tempMin: Math.round(Math.min(...d.temps)),
+          icon: d.icons[Math.floor(d.icons.length / 2)] || d.icons[0],
+          description: d.descs[Math.floor(d.descs.length / 2)] || d.descs[0],
+          precipChance: Math.max(...d.pops),
+        };
+      });
+    }
+
+    // ── Open-Meteo days 6-7 ─────────────────────────────────────────────
+    const wmoIconMap: Record<number, string> = {
+      0: '01d', 1: '02d', 2: '03d', 3: '04d',
+      45: '50d', 48: '50d',
+      51: '09d', 53: '09d', 55: '09d',
+      61: '10d', 63: '10d', 65: '10d',
+      71: '13d', 73: '13d', 75: '13d',
+      80: '09d', 81: '09d', 82: '09d',
+      95: '11d', 96: '11d', 99: '11d',
+    };
+
+    const wmoDescMap: Record<number, string> = {
+      0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+      45: 'Foggy', 48: 'Rime fog',
+      51: 'Light drizzle', 53: 'Drizzle', 55: 'Dense drizzle',
+      61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain',
+      71: 'Slight snow', 73: 'Moderate snow', 75: 'Heavy snow',
+      80: 'Rain showers', 81: 'Moderate showers', 82: 'Violent showers',
+      95: 'Thunderstorm', 96: 'Thunderstorm with hail', 99: 'Heavy thunderstorm',
+    };
+
+    let omExtras: typeof owmDays = [];
+    if (omForecastRes.ok) {
+      const omRaw = await omForecastRes.json();
+      const owmDates = new Set(owmDays.map(d => d.date));
+
+      omExtras = (omRaw.daily.time as string[])
+        .map((dateStr: string, i: number) => {
+          const code: number = omRaw.daily.weather_code[i];
+          const dayIndex = new Date(dateStr + 'T12:00:00').getDay();
+          return {
+            date: dateStr,
+            day: dateStr === todayStr ? 'Today' : DAY_LABELS[dayIndex],
+            isToday: dateStr === todayStr,
+            tempMax: Math.round(omRaw.daily.temperature_2m_max[i]),
+            tempMin: Math.round(omRaw.daily.temperature_2m_min[i]),
+            icon: wmoIconMap[code] ?? '01d',
+            description: wmoDescMap[code] ?? 'Fair',
+            precipChance: omRaw.daily.precipitation_probability_max[i] ?? 0,
+          };
+        })
+        .filter(d => !owmDates.has(d.date)); // Only keep days OWM didn't cover
+    }
+
+    // Merge: OWM first (days 1-5), then Open-Meteo extras (days 6-7)
+    const forecast7 = [...owmDays, ...omExtras].slice(0, 7);
+
+    // Today's precipitation from OWM data (or first forecast day)
+    const precipitationChance = owmDays.length > 0 && owmDays[0].isToday
+      ? owmDays[0].precipChance
+      : 0;
 
     const weatherData = {
       temp: Math.round(current.main.temp),
@@ -125,6 +207,7 @@ export async function GET(request: NextRequest) {
       wind_speed: Math.round(current.wind.speed),
       precipitation_chance: precipitationChance,
       city: current.name,
+      forecast: forecast7,
     };
 
     return NextResponse.json(weatherData, {

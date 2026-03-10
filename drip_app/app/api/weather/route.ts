@@ -97,9 +97,9 @@ export async function GET(request: NextRequest) {
         `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&cnt=40&appid=${OPENWEATHER_API_KEY}`,
         { next: { revalidate: CACHE_DURATION } }
       ),
-      // Open-Meteo 7-day (we only use days 6+7 from this)
+      // Open-Meteo 8-day (to guarantee we don't drop the 7th/8th day due to timezone shift)
       fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=7`,
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=8`,
         { next: { revalidate: CACHE_DURATION } }
       ),
     ]);

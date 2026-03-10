@@ -323,44 +323,60 @@ export function DashboardClient({ profile, clothingItems, recentLogs }: Dashboar
           </div>
 
           <div className={styles.leftContent}>
-            {/* Weather - Icon & Temp Left/Big, Details Below */}
-            <div className={styles.weatherHorizontal}>
-              {weatherLoading ? (
-                <div className={styles.spinner} style={{ width: '24px', height: '24px', borderWidth: '2px' }} />
-              ) : weather ? (
-                <>
-                  <div className={styles.weatherMain}>
-                    <img
-                      src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
-                      alt={weather.description}
-                      className={styles.weatherIconBig}
-                    />
-                    <span className={styles.weatherTempHuge}>{Math.round(weather.temp)}°</span>
-                  </div>
-                  <span className={styles.weatherDesc}>{weather.description}</span>
-                  <div className={styles.weatherDetailsRow}>
-                    <span>Feels {Math.round(weather.feels_like)}°</span>
-                    <span className={styles.weatherDot}>•</span>
-                    <span>{weather.precipitation_chance}% rain</span>
-                    <span className={styles.weatherDot}>•</span>
-                    <span>{Math.round(weather.wind_speed)} m/s</span>
-                  </div>
-                </>
-              ) : (
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
-                  Weather unavailable
-                </span>
+            {/* Top Weather Section */}
+            <div className={styles.weatherSection}>
+              {/* Today's Weather */}
+              <div className={styles.currentWeatherContainer}>
+                <div className={styles.todayWeatherHeader}>
+                  <span className={styles.todayWeatherLabel}>Today's Weather</span>
+                  {weather?.city && (
+                    <>
+                      <span className={styles.weatherDot}>•</span>
+                      <span className={styles.cityLabel}>{weather.city}</span>
+                    </>
+                  )}
+                </div>
+                <div className={styles.weatherHorizontal}>
+                  {weatherLoading ? (
+                    <div className={styles.spinner} style={{ width: '24px', height: '24px', borderWidth: '2px' }} />
+                  ) : weather ? (
+                    <>
+                      <div className={styles.weatherMain}>
+                        <img
+                          src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
+                          alt={weather.description}
+                          className={styles.weatherIconBig}
+                        />
+                        <span className={styles.weatherTempHuge}>{Math.round(weather.temp)}°</span>
+                      </div>
+                      <span className={styles.weatherDesc}>{weather.description}</span>
+                      <div className={styles.weatherDetailsRow}>
+                        <span>Feels {Math.round(weather.feels_like)}°</span>
+                        <span className={styles.weatherDot}>•</span>
+                        <span>{weather.precipitation_chance}% rain</span>
+                        <span className={styles.weatherDot}>•</span>
+                        <span>{Math.round(weather.wind_speed)} m/s</span>
+                      </div>
+                    </>
+                  ) : (
+                    <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
+                      Weather unavailable
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* 7-Day Forecast Bar */}
+              {weather?.forecast && weather.forecast.length > 0 && (
+                <div className={styles.forecastContainer}>
+                  <ForecastBar
+                    forecast={weather.forecast}
+                    selectedDate={selectedDay?.date ?? null}
+                    onSelectDay={handleSelectDay}
+                  />
+                </div>
               )}
             </div>
-
-            {/* 7-Day Forecast Bar */}
-            {weather?.forecast && weather.forecast.length > 0 && (
-              <ForecastBar
-                forecast={weather.forecast}
-                selectedDate={selectedDay?.date ?? null}
-                onSelectDay={handleSelectDay}
-              />
-            )}
 
             {/* Planning banner for future days */}
             {selectedDay && (

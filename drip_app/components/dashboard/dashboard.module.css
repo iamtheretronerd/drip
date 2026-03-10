@@ -286,17 +286,67 @@
   overflow-y: auto;
 }
 
-/* Weather - Icon & Temp Left, Details Below */
-.weatherHorizontal {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
+/* ─── Top Weather Section ──────────────────────────────────────────────────────── */
+.weatherSection {
+  align-self: flex-end;
   z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  gap: 1.5rem;
+  max-width: 480px;
+
+  /* Glassmorphism for readability against vivid backgrounds */
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 1.5rem;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  margin-bottom: 1rem;
+  /* limits width for forecast bar */
+}
+
+/* Today's Weather Block */
+.currentWeatherContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   gap: 0.5rem;
+}
+
+.todayWeatherHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.todayWeatherLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.cityLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.05em;
+}
+
+.weatherHorizontal {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
   text-align: right;
+}
+
+.forecastContainer {
+  width: 100%;
 }
 
 .weatherMain {
@@ -384,7 +434,7 @@
 
 /* Outfit Container */
 .outfitContainer {
-  padding: 12rem 1rem 2rem;
+  padding: 1rem 1rem 2rem;
   max-width: 420px;
   margin: 0 auto;
   width: 100%;
@@ -1093,14 +1143,25 @@
   }
 
   .outfitContainer {
-    padding: 5rem 1rem 1.5rem;
+    padding: 2rem 1rem 1.5rem;
   }
 
-  .weatherOverlay {
-    position: relative;
-    top: auto;
-    right: auto;
+  .weatherSection {
+    align-self: center;
+    width: 100%;
     margin-bottom: 1rem;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .weatherHorizontal {
+    align-items: center;
+    text-align: center;
+  }
+
+  .forecastContainer {
+    max-width: 100%;
   }
 
   .slidePanel {

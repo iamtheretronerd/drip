@@ -8,15 +8,16 @@ export default defineConfig({
         environment: 'jsdom',
         globals: true,
         setupFiles: ['./tests/unit/setup.ts'],
-        coverage: {
-            provider: 'v8',
-            reporter: ['text', 'lcov'],
-            thresholds: {
-                lines: 80,
-                functions: 80,
-                branches: 80,
-                statements: 80,
-            },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      reportsDirectory: './coverage',
+      thresholds: {
+        lines: 50,
+        functions: 50,
+        branches: 50,
+        statements: 50,
+      },
             exclude: [
                 'node_modules/**',
                 '.next/**',

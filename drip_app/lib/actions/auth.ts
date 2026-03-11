@@ -118,15 +118,12 @@ export async function resetPassword(
         },
     );
 
-    if (error) {
-        return { success: false, error: error.message };
-    }
-
-    // Always return success to prevent email enumeration
-    return {
-        success: true,
-        data: null,
-    };
+  // Always return success to prevent email enumeration
+  // Even if there's an error, we don't reveal whether the email exists
+  return {
+    success: true,
+    data: null,
+  };
 }
 
 // ─── Update Password ──────────────────────────────────────────────────────────

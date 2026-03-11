@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import {
-    SignUpSchema,
-    LoginSchema,
-    ResetPasswordSchema,
+  SignUpSchema,
+  LoginSchema,
+  ResetPasswordSchema,
+  UpdatePasswordSchema,
 } from '@/lib/validations/auth';
 
 // ─── SignUpSchema ─────────────────────────────────────────────────────────────
@@ -121,16 +122,82 @@ describe('LoginSchema', () => {
 
 // ─── ResetPasswordSchema ──────────────────────────────────────────────────────
 describe('ResetPasswordSchema', () => {
-    it('should pass with valid email', () => {
-        const result = ResetPasswordSchema.safeParse({ email: 'user@drip.app' });
-        expect(result.success).toBe(true);
-    });
+  it('should pass with valid email', () => {
+    const result = ResetPasswordSchema.safeParse({ email: 'user@drip.app' });
+    expect(result.success).toBe(true);
+  });
 
-    it('should fail with invalid email', () => {
-        const result = ResetPasswordSchema.safeParse({ email: 'not-valid' });
-        expect(result.success).toBe(false);
-        expect(result.error?.flatten().fieldErrors.email?.[0]).toBe(
-            'Please enter a valid email address',
-        );
+  it('should fail with invalid email', () => {
+    const result = ResetPasswordSchema.safeParse({ email: 'not-valid' });
+    expect(result.success).toBe(false);
+    expect(result.error?.flatten().fieldErrors.email?.[0]).toBe(
+      'Please enter a valid email address',
+    );
+  });
+});
+
+// ─── UpdatePasswordSchema ─────────────────────────────────────────────────────
+describe('UpdatePasswordSchema', () => {
+  it('should pass with valid matching passwords', () => {
+    const result = UpdatePasswordSchema.safeParse({
+      password: 'NewPass123',
+      confirmPassword: 'NewPass123',
     });
+    expect(result.success).toBe(true);
+  });
+
+  it('should fail when passwords do not match', () => {
+    const result = UpdatePasswordSchema.safeParse({
+      password: 'NewPass123',
+      confirmPassword: 'DifferentPass123',
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.flatten().fieldErrors.confirmPassword).toContain(
+      "Passwords don't match",
+    );
+  });
+
+  it('should fail when password is too short', () => {
+    const result = UpdatePasswordSchema.safeParse({
+      password: 'Short1',
+      confirmPassword: 'Short1',
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.flatten().fieldErrors.password).toContain(
+      'Password must be at least 8 characters',
+    );
+  });
+
+  it('should fail when password has no uppercase', () => {
+    const result = UpdatePasswordSchema.safeParse({
+      password: 'password123',
+      confirmPassword: 'password123',
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.flatten().fieldErrors.password).toContain(
+      'Password must contain at least one uppercase letter',
+    );
+  });
+
+  it('should fail when password has no lowercase', () => {
+    const result = UpdatePasswordSchema.safeParse({
+      password: 'PASSWORD123',
+      confirmPassword: 'PASSWORD123',
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.flatten().fieldErrors.password).toContain(
+      'Password must contain at least one lowercase letter',
+    );
+  });
+
+  it('should fail when password has no number', () => {
+    const result = UpdatePasswordSchema.safeParse({
+      password: 'PasswordOnly',
+      confirmPassword: 'PasswordOnly',
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.flatten().fieldErrors.password).toContain(
+      'Password must contain at least one number',
+    );
+  });
 });

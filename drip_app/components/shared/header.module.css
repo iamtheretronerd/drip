@@ -23,16 +23,13 @@
 }
 
 .logo {
-    font-family: 'Cooper Black', serif;
-    font-size: 1.75rem;
-    font-weight: 800;
+    font-family: 'Bebas Neue', 'Oswald', sans-serif;
+    font-size: 1.85rem;
+    font-weight: 700;
     color: #ffffff;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.08em;
     text-decoration: none;
-    background: linear-gradient(135deg, #F7E24A, #ffffff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
 }
 
 .navLinks {

@@ -206,15 +206,15 @@
 }
 
 .buttonAccent {
-  background: linear-gradient(135deg, #F7E24A, #F5B847, #D94242);
-  color: #1A1A1A;
-  font-weight: 800;
+  background: #ffffff;
+  color: #0a0a0a;
+  font-weight: 700;
 }
 
 .buttonAccent:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(247, 226, 74, 0.3);
-  filter: brightness(1.1);
+  box-shadow: 0 12px 32px rgba(255, 255, 255, 0.2);
+  filter: brightness(0.95);
 }
 
 /* ─── FAB ────────────────────────────────────────────────────────────────────── */
@@ -358,7 +358,7 @@
 .weatherIconBig {
   width: 56px;
   height: 56px;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) brightness(0) invert(1);
 }
 
 .weatherTempHuge {
@@ -1326,14 +1326,14 @@
 
 .buttonOutline {
   background: transparent !important;
-  border: 1px solid rgba(247, 226, 74, 0.4) !important;
-  color: #F7E24A !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
   font-weight: 600;
 }
 
 .buttonOutline:hover {
-  background: rgba(247, 226, 74, 0.1) !important;
-  border-color: #F7E24A !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: #ffffff !important;
 }
 
 .buttonSuccess {

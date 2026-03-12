@@ -2,7 +2,7 @@
 
 **Project:** Drip (Weather-Based Outfit Planning App)  
 **Generated:** 2026-03-12  
-**Test Runner:** Vitest  
+**Test Runner:** Vitest (Unit & Integration), Playwright (E2E)  
 **Command:** `npm run test:coverage`
 
 ---
@@ -150,7 +150,11 @@ npm run test:e2e
 
 ## 6. Screenshots
 
+### Vitest Unit & Integration Test Dashboard
+
 ![Vitest Unit Test Dashboard](./assets/screenshots/vitest_dashboard.png)
+
+### Playwright E2E Test Dashboard
 
 ![Playwright E2E Test Dashboard](./assets/screenshots/playwright_auth_dashboard.png)
 

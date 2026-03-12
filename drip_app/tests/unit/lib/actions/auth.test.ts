@@ -78,6 +78,35 @@ describe('signUp', () => {
     expect(result.success).toBe(false);
     expect(result.error).toBe('Email already exists');
   });
+
+  it('returns error when Database not connected', async () => {
+    const { createClient } = await import('@/lib/supabase/server');
+    vi.mocked(createClient).mockResolvedValueOnce(null);
+
+    const formData = new FormData();
+    formData.append('fullName', 'John Doe');
+    formData.append('email', 'john@example.com');
+    formData.append('password', 'Password123');
+
+    const result = await signUp({ success: false } as ActionResult, formData);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('Database not connected.');
+  });
+
+  it('handles zod error with no message array gracefully', async () => {
+    const { SignUpSchema } = await import('@/lib/validations/auth');
+    vi.spyOn(SignUpSchema, 'safeParse').mockReturnValueOnce({
+      success: false,
+      error: { flatten: () => ({ fieldErrors: { email: undefined } }) } as any
+    });
+
+    const formData = new FormData();
+    const result = await signUp({ success: false } as ActionResult, formData);
+
+    expect(result.success).toBe(false);
+    expect(result.fieldErrors).toStrictEqual({});
+  });
 });
 
 describe('login', () => {
@@ -129,6 +158,34 @@ describe('login', () => {
       password: 'CorrectPass123',
     });
   });
+
+  it('returns error when Database not connected', async () => {
+    const { createClient } = await import('@/lib/supabase/server');
+    vi.mocked(createClient).mockResolvedValueOnce(null);
+
+    const formData = new FormData();
+    formData.append('email', 'user@example.com');
+    formData.append('password', 'CorrectPass123');
+
+    const result = await login({ success: false } as ActionResult, formData);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('Database not connected.');
+  });
+
+  it('handles zod error with no message array gracefully in login', async () => {
+    const { LoginSchema } = await import('@/lib/validations/auth');
+    vi.spyOn(LoginSchema, 'safeParse').mockReturnValueOnce({
+      success: false,
+      error: { flatten: () => ({ fieldErrors: { email: [] } }) } as any
+    });
+
+    const formData = new FormData();
+    const result = await login({ success: false } as ActionResult, formData);
+
+    expect(result.success).toBe(false);
+    expect(result.fieldErrors).toStrictEqual({});
+  });
 });
 
 describe('logout', () => {
@@ -142,6 +199,15 @@ describe('logout', () => {
     await logout();
 
     expect(mockSignOut).toHaveBeenCalled();
+  });
+
+  it('skips signOut when Database is not connected', async () => {
+    const { createClient } = await import('@/lib/supabase/server');
+    vi.mocked(createClient).mockResolvedValueOnce(null);
+
+    await logout();
+
+    expect(mockSignOut).not.toHaveBeenCalled();
   });
 });
 
@@ -185,6 +251,19 @@ describe('resetPassword', () => {
         redirectTo: expect.stringContaining('/auth/callback'),
       })
     );
+  });
+
+  it('returns error when Database not connected', async () => {
+    const { createClient } = await import('@/lib/supabase/server');
+    vi.mocked(createClient).mockResolvedValueOnce(null);
+
+    const formData = new FormData();
+    formData.append('email', 'user@example.com');
+
+    const result = await resetPassword({ success: false } as ActionResult, formData);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('Database not connected.');
   });
 });
 
@@ -238,5 +317,33 @@ describe('updatePassword', () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toBe('Token expired');
+  });
+
+  it('returns error when Database not connected', async () => {
+    const { createClient } = await import('@/lib/supabase/server');
+    vi.mocked(createClient).mockResolvedValueOnce(null);
+
+    const formData = new FormData();
+    formData.append('password', 'NewStrongPass123');
+    formData.append('confirmPassword', 'NewStrongPass123');
+
+    const result = await updatePassword({ success: false } as ActionResult, formData);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('Database not connected.');
+  });
+
+  it('handles zod error with no message array gracefully in updatePassword', async () => {
+    const { UpdatePasswordSchema } = await import('@/lib/validations/auth');
+    vi.spyOn(UpdatePasswordSchema, 'safeParse').mockReturnValueOnce({
+      success: false,
+      error: { flatten: () => ({ fieldErrors: { password: undefined } }) } as any
+    });
+
+    const formData = new FormData();
+    const result = await updatePassword({ success: false } as ActionResult, formData);
+
+    expect(result.success).toBe(false);
+    expect(result.fieldErrors).toStrictEqual({});
   });
 });

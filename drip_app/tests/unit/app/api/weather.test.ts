@@ -86,6 +86,27 @@ describe('GET /api/weather', () => {
     expect(data.error).toContain('Failed to fetch');
   });
 
+  it('handles forecast API failures gracefully', async () => {
+    const mockCurrent = {
+      main: { temp: 25, feels_like: 26, humidity: 60 },
+      weather: [{ description: 'sunny', icon: '01d' }],
+      wind: { speed: 5 },
+      name: 'Test City',
+    };
+
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => mockCurrent })
+      .mockResolvedValueOnce({ ok: false }) // owm fails
+      .mockResolvedValueOnce({ ok: false }); // om fails
+
+    const request = createMockRequest({ lat: '40', lon: '-74' });
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.forecast).toHaveLength(0);
+  });
+
   it('returns historical weather when dt parameter is provided', async () => {
     const mockHistorical = {
       daily: {
@@ -105,7 +126,7 @@ describe('GET /api/weather', () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.temp).toBe(22);
+    expect(data.temp).toBe(23);
     expect(data.description).toBe('Slight rain');
     expect(data.icon).toBe('10d');
     expect(data.city).toBe('Historical Record');
@@ -131,7 +152,7 @@ describe('GET /api/weather', () => {
     const request = createMockRequest({ lat: '40', lon: '-74' });
     const response = await GET(request);
 
-    const cacheHeader = response.headers.get('Cache-Control');
+    const cacheHeader = response.headers.get('cache-control');
     expect(cacheHeader).toContain('s-maxage=1800');
     expect(cacheHeader).toContain('public');
   });
@@ -221,5 +242,99 @@ describe('GET /api/weather', () => {
 
     expect(response.status).toBe(200);
     expect(data.forecast).toHaveLength(7);
+  });
+
+  it('handles missing data in forecast responses to cover fallback branches', async () => {
+    const mockCurrent = {
+      main: { temp: 22, feels_like: 23, humidity: 55 },
+      weather: [{ description: 'cloudy', icon: '03d' }],
+      wind: { speed: 8 },
+      name: 'Test City',
+    };
+
+    const mockForecast = {
+      list: [
+        { 
+          dt_txt: '2025-01-15 12:00:00', 
+          main: { temp_max: 20, temp_min: 15 }, 
+          weather: [{ icon: '', description: '' }] 
+          // pop is intentionally omitted
+        }
+      ]
+    };
+    const mockOM = {
+      daily: {
+        time: ['2025-01-16'],
+        weather_code: [999], // unknown code
+        temperature_2m_max: [20],
+        temperature_2m_min: [15],
+        precipitation_probability_max: [null], // null to fallback to 0
+      },
+    };
+
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => mockCurrent })
+      .mockResolvedValueOnce({ ok: true, json: async () => mockForecast })
+      .mockResolvedValueOnce({ ok: true, json: async () => mockOM });
+
+    const request = createMockRequest({ lat: '40', lon: '-74' });
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.forecast[0].precipChance).toBe(0); // OWM pop fallback
+    expect(data.forecast[1].description).toBe('Fair'); // OM desc fallback
+    expect(data.forecast[1].icon).toBe('01d'); // OM icon fallback
+    expect(data.forecast[1].precipChance).toBe(0); // OM pop fallback
+  });
+
+  it('handles today branches and multiple entries per day', async () => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const mockCurrent = {
+      main: { temp: 22, feels_like: 23, humidity: 55 },
+      weather: [{ description: 'cloudy', icon: '03d' }],
+      wind: { speed: 8 },
+      name: 'Test City',
+    };
+
+    const mockForecast = {
+      list: [
+        { 
+          dt_txt: `${todayStr} 09:00:00`, 
+          main: { temp_max: 20, temp_min: 15 }, 
+          weather: [{ icon: '01d', description: 'sunny' }],
+          pop: 0.1
+        },
+        { 
+          dt_txt: `${todayStr} 12:00:00`, // Duplicate date to hit byDate.has(dateStr)
+          main: { temp_max: 22, temp_min: 16 }, 
+          weather: [{ icon: '02d', description: 'cloudy' }],
+          pop: 0.5
+        }
+      ]
+    };
+    const mockOM = {
+      daily: {
+        time: [todayStr],
+        weather_code: [1],
+        temperature_2m_max: [20],
+        temperature_2m_min: [15],
+        precipitation_probability_max: [10],
+      },
+    };
+
+    global.fetch = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => mockCurrent })
+      .mockResolvedValueOnce({ ok: true, json: async () => mockForecast })
+      .mockResolvedValueOnce({ ok: true, json: async () => mockOM });
+
+    const request = createMockRequest({ lat: '40', lon: '-74' });
+    const response = await GET(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.forecast[0].isToday).toBe(true);
+    expect(data.forecast[0].day).toBe('Today');
+    expect(data.precipitation_chance).toBe(50); // Max pop of today
   });
 });

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
 const CACHE_DURATION = 30 * 60; // 30 minutes in seconds
 
 export async function GET(request: NextRequest) {
+  const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
+
   const { searchParams } = new URL(request.url);
   const lat = searchParams.get('lat');
   const lon = searchParams.get('lon');

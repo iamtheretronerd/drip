@@ -5,12 +5,13 @@ import type { ClothingItem, Profile } from '@/types/database';
 import type { WeatherData } from '@/types/weather';
 import type { GeminiOutfitResponse, OutfitSuggestion } from '@/types/outfit';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_API_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 export async function POST(request: NextRequest) {
   try {
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
     const supabase = await createClient();
     if (!supabase) {
       return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 });
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     if (GEMINI_API_KEY) {
       try {
-        suggestion = await callGemini(filtered, items, weather ?? null, mood ?? null, profile, seed);
+        suggestion = await callGemini(filtered, items, weather ?? null, mood ?? null, profile, seed, GEMINI_API_KEY);
       } catch (err) {
         console.error('Gemini outfit generation failed, using fallback:', err);
         suggestion = fallbackOutfit(filtered);
@@ -90,7 +91,8 @@ async function callGemini(
   weather: WeatherData | null,
   mood: string | null,
   profile: Profile | null,
-  seed?: number
+  seed?: number,
+  geminiApiKey?: string
 ): Promise<OutfitSuggestion> {
   const wardrobe = buildGeminiPayload(filtered);
 
@@ -136,7 +138,7 @@ ${seed ? `Variety Seed: ${seed}. If this is a regeneration, provide a DIFFERENT 
 
 Pick the best outfit combination. Return ONLY the JSON.`;
 
-  const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+  const response = await fetch(`${GEMINI_API_URL}?key=${geminiApiKey}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

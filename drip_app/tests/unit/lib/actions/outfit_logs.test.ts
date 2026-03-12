@@ -18,16 +18,24 @@ const mockOrder = vi.fn();
 const mockLimit = vi.fn();
 const mockSingle = vi.fn();
 
-const createMockChain = (overrides = {}) => ({
-  eq: mockEq.mockReturnThis(),
-  in: mockIn.mockReturnThis(),
-  order: mockOrder.mockReturnThis(),
-  limit: mockLimit.mockReturnThis(),
-  single: mockSingle,
-  update: mockUpdate.mockReturnThis(),
-  delete: mockDelete.mockReturnThis(),
-  ...overrides,
-});
+const createMockChain = (overrides = {}) => {
+  const chain = {
+    upsert: mockUpsert,
+    select: mockSelect,
+    eq: mockEq,
+    in: mockIn,
+    order: mockOrder,
+    limit: mockLimit,
+    single: mockSingle,
+    update: mockUpdate,
+    delete: mockDelete,
+    then: function(resolve: any) {
+      resolve({ error: null });
+    },
+    ...overrides,
+  };
+  return chain;
+};
 
 const mockFrom = vi.fn(() => createMockChain());
 
@@ -46,10 +54,12 @@ vi.mock('@/lib/supabase/service', () => ({
 describe('logOutfit', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockEq.mockReturnThis();
-    mockIn.mockReturnThis();
-    mockOrder.mockReturnThis();
-    mockLimit.mockReturnThis();
+    mockSelect.mockImplementation(() => createMockChain());
+    mockEq.mockImplementation(() => createMockChain());
+    mockOrder.mockImplementation(() => createMockChain());
+    mockLimit.mockImplementation(() => createMockChain());
+    mockUpdate.mockImplementation(() => createMockChain());
+    mockDelete.mockImplementation(() => createMockChain());
   });
 
   const mockWeather: WeatherSnapshot = {
@@ -86,7 +96,6 @@ describe('logOutfit', () => {
       data: [{ id: 'item-1', times_worn: 0, last_worn: null, consecutive_days_worn: 0 }],
       error: null,
     });
-    mockEq.mockResolvedValue({ error: null });
 
     const result = await logOutfit(['item-1'], mockWeather, 'happy', false);
 
@@ -110,7 +119,6 @@ describe('logOutfit', () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-123' } }, error: null });
     mockUpsert.mockResolvedValue({ error: null });
     mockIn.mockReturnValue({ data: [], error: null });
-    mockEq.mockResolvedValue({ error: null });
 
     await logOutfit(['item-1'], null, null, false, '2024-03-15');
 
@@ -136,7 +144,6 @@ describe('logOutfit', () => {
       }],
       error: null,
     });
-    mockEq.mockResolvedValue({ error: null });
 
     const result = await logOutfit(['item-1'], null, null, false);
 
@@ -157,7 +164,6 @@ describe('logOutfit', () => {
       }],
       error: null,
     });
-    mockEq.mockResolvedValue({ error: null });
 
     const result = await logOutfit(['item-1'], null, null, false);
 
@@ -214,10 +220,12 @@ describe('logOutfit', () => {
 describe('unlogOutfit', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockEq.mockReturnThis();
-    mockIn.mockReturnThis();
-    mockOrder.mockReturnThis();
-    mockLimit.mockReturnThis();
+    mockSelect.mockImplementation(() => createMockChain());
+    mockEq.mockImplementation(() => createMockChain());
+    mockOrder.mockImplementation(() => createMockChain());
+    mockLimit.mockImplementation(() => createMockChain());
+    mockUpdate.mockImplementation(() => createMockChain());
+    mockDelete.mockImplementation(() => createMockChain());
   });
 
   it('returns error when not authenticated', async () => {
@@ -257,7 +265,6 @@ describe('unlogOutfit', () => {
       data: [{ id: 'item-1', times_worn: 5 }],
       error: null,
     });
-    mockEq.mockResolvedValue({ error: null });
 
     const result = await unlogOutfit();
 
@@ -284,7 +291,6 @@ describe('unlogOutfit', () => {
       data: [{ id: 'item-1', times_worn: 0 }],
       error: null,
     });
-    mockEq.mockResolvedValue({ error: null });
 
     const result = await unlogOutfit();
 
@@ -309,7 +315,6 @@ describe('unlogOutfit', () => {
       data: [{ id: 'item-1' }],
       error: null,
     });
-    mockEq.mockResolvedValue({ error: null });
 
     const result = await unlogOutfit();
 

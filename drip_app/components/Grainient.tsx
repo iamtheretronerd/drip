@@ -156,14 +156,20 @@ const Grainient: React.FC<GrainientProps> = ({
  useEffect(() => {
  if (!containerRef.current) return;
 
- const renderer = new Renderer({
- webgl: 2,
- alpha: true,
- antialias: false,
- dpr: Math.min(window.devicePixelRatio || 1, 2)
- });
-
- const gl = renderer.gl;
+ let renderer: Renderer;
+ let gl: any;
+ try {
+  renderer = new Renderer({
+  webgl: 2,
+  alpha: true,
+  antialias: false,
+  dpr: Math.min(window.devicePixelRatio || 1, 2)
+  });
+  gl = renderer.gl;
+ } catch (e) {
+  console.warn('Grainient: WebGL 2 not supported, falling back.', e);
+  return;
+ }
  const canvas = gl.canvas as HTMLCanvasElement;
  canvas.style.width = '100%';
  canvas.style.height = '100%';

@@ -51,9 +51,10 @@ export async function logOutfit(
 
         const updatePromises = items.map(async (item: any) => {
             const lastWornDate = item.last_worn ? new Date(item.last_worn).toISOString().split('T')[0] : null;
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            const yesterdayStr = yesterday.toISOString().split('T')[0];
+            const currentTargetDate = new Date(targetDate);
+            const targetYesterday = new Date(currentTargetDate);
+            targetYesterday.setDate(targetYesterday.getDate() - 1);
+            const yesterdayStr = targetYesterday.toISOString().split('T')[0];
 
             let newConsecutive = 1;
             if (lastWornDate === yesterdayStr) {

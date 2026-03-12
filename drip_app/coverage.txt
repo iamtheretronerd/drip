@@ -1,0 +1,150 @@
+
+> drip_app@0.1.0 test:coverage
+> vitest run --coverage
+
+
+[1m[46m RUN [49m[22m [36mv4.0.18 [39m[90m/Users/chocolate/Downloads/drip/drip_app[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+[90mstderr[2m | tests/unit/app/api/analyze-clothing.test.ts[2m > [22m[2mPOST /api/analyze-clothing[2m > [22m[2mreturns 500 when Gemini API fails
+[22m[39mGemini API error: { error: [32m'API Error'[39m }
+
+[90mstderr[2m | tests/unit/lib/actions/outfit_logs.test.ts[2m > [22m[2mlogOutfit[2m > [22m[2mreturns error when upsert fails
+[22m[39mFailed to log outfit: { message: [32m'Database error'[39m }
+
+[90mstderr[2m | tests/unit/lib/actions/outfit_logs.test.ts[2m > [22m[2mlogOutfit[2m > [22m[2mreturns error when fetch fails
+[22m[39mFailed to log outfit: { message: [32m'Fetch error'[39m }
+
+[90mstderr[2m | tests/unit/lib/actions/outfit_logs.test.ts[2m > [22m[2mlogOutfit[2m > [22m[2mhandles update error gracefully
+[22m[39mFailed to log outfit: Error: Update failed
+    at [90m/Users/chocolate/Downloads/drip/drip_app/[39mtests/unit/lib/actions/outfit_logs.test.ts:211:30
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1209:10[90m)[39m
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
+    at Traces.$ [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.CCmnQaNT.js:142:27[90m)[39m
+    at trace [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
+    at runTest [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:12[90m)[39m
+
+[90mstderr[2m | tests/unit/lib/actions/outfit_logs.test.ts[2m > [22m[2munlogOutfit[2m > [22m[2mhandles delete error
+[22m[39mFailed to unlog outfit: { message: [32m'Delete failed'[39m }
+
+[90mstderr[2m | tests/unit/app/api/generate-outfit.test.ts[2m > [22m[2mPOST /api/generate-outfit[2m > [22m[2mfalls back to rule-based engine when Gemini fetch fails
+[22m[39mGemini outfit generation failed, using fallback: Error: Gemini API returned 500
+    at callGemini [90m(/Users/chocolate/Downloads/drip/drip_app/[39mapp/api/generate-outfit/route.ts:156:11[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at Module.POST [90m(/Users/chocolate/Downloads/drip/drip_app/[39mapp/api/generate-outfit/route.ts:72:22[90m)[39m
+    at [90m/Users/chocolate/Downloads/drip/drip_app/[39mtests/unit/app/api/generate-outfit.test.ts:208:22
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstderr[2m | tests/unit/app/api/analyze-clothing.test.ts[2m > [22m[2mPOST /api/analyze-clothing[2m > [22m[2mreturns 500 on internal error
+[22m[39mError analyzing clothing: Error: Network error
+    at [90m/Users/chocolate/Downloads/drip/drip_app/[39mtests/unit/app/api/analyze-clothing.test.ts:206:46
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1209:10[90m)[39m
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
+    at Traces.$ [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.CCmnQaNT.js:142:27[90m)[39m
+    at trace [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
+    at runTest [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:12[90m)[39m
+
+ [32m✓[39m tests/unit/lib/outfit-engine.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+[90mstderr[2m | tests/unit/app/api/weather.test.ts[2m > [22m[2mGET /api/weather[2m > [22m[2mreturns 500 on internal error
+[22m[39mWeather API error: Error: Network error
+    at [90m/Users/chocolate/Downloads/drip/drip_app/[39mtests/unit/app/api/weather.test.ts:205:46
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1209:10[90m)[39m
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
+    at Traces.$ [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.CCmnQaNT.js:142:27[90m)[39m
+    at trace [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
+    at runTest [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:12[90m)[39m
+
+[90mstderr[2m | tests/unit/app/api/generate-outfit.test.ts[2m > [22m[2mPOST /api/generate-outfit[2m > [22m[2mruns out of bounds on error
+[22m[39mGenerate outfit error: Error: Auth error
+    at [90m/Users/chocolate/Downloads/drip/drip_app/[39mtests/unit/app/api/generate-outfit.test.ts:321:35
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:145:11
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:26
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1209:10[90m)[39m
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:37
+    at Traces.$ [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4mvitest[24m/dist/chunks/traces.CCmnQaNT.js:142:27[90m)[39m
+    at trace [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4mvitest[24m/dist/chunks/test.B8ej_ZHS.js:239:21[90m)[39m
+    at runTest [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:1653:12[90m)[39m
+
+[90mstderr[2m | tests/unit/app/api/generate-outfit.test.ts[2m > [22m[2mPOST /api/generate-outfit[2m > [22m[2mhandles empty text parts from Gemini
+[22m[39mGemini outfit generation failed, using fallback: Error: Empty Gemini response
+    at callGemini [90m(/Users/chocolate/Downloads/drip/drip_app/[39mapp/api/generate-outfit/route.ts:161:20[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at Module.POST [90m(/Users/chocolate/Downloads/drip/drip_app/[39mapp/api/generate-outfit/route.ts:72:22[90m)[39m
+    at [90m/Users/chocolate/Downloads/drip/drip_app/[39mtests/unit/app/api/generate-outfit.test.ts:349:22
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+[90mstderr[2m | tests/unit/app/api/generate-outfit.test.ts[2m > [22m[2mPOST /api/generate-outfit[2m > [22m[2mhandles no JSON block in Gemini response
+[22m[39mGemini outfit generation failed, using fallback: Error: No JSON in Gemini response
+    at callGemini [90m(/Users/chocolate/Downloads/drip/drip_app/[39mapp/api/generate-outfit/route.ts:164:25[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at Module.POST [90m(/Users/chocolate/Downloads/drip/drip_app/[39mapp/api/generate-outfit/route.ts:72:22[90m)[39m
+    at [90m/Users/chocolate/Downloads/drip/drip_app/[39mtests/unit/app/api/generate-outfit.test.ts:373:22
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20
+
+ [32m✓[39m tests/unit/lib/actions/outfit_logs.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m tests/unit/app/api/weather.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m tests/unit/app/api/analyze-clothing.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m tests/unit/app/api/generate-outfit.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m tests/unit/lib/validations/auth.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/unit/lib/actions/auth.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m tests/unit/lib/supabase/service.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m tests/unit/lib/weather.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+[90mstderr[2m | tests/unit/lib/actions/clothing.test.ts[2m > [22m[2mdeleteClothingItem[2m > [22m[2mhandles malformed storage URL gracefully
+[22m[39mFailed to parse storage URL: TypeError: Invalid URL
+[90m    at new URL (node:internal/url:819:25)[39m
+    at new URL$1 [90m(file:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4mvitest[24m/dist/chunks/index.CyBMJtT7.js:556:9[90m)[39m
+    at Module.deleteClothingItem [90m(/Users/chocolate/Downloads/drip/drip_app/[39mlib/actions/clothing.ts:25:26[90m)[39m
+[90m    at processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at [90m/Users/chocolate/Downloads/drip/drip_app/[39mtests/unit/lib/actions/clothing.test.ts:82:20
+    at [90mfile:///Users/chocolate/Downloads/drip/drip_app/[39mnode_modules/[4m@vitest[24m/runner/dist/index.js:915:20 {
+  code: [32m'ERR_INVALID_URL'[39m,
+  input: [32m'invalid-url'[39m
+}
+
+ [32m✓[39m tests/unit/lib/actions/onboarding.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/unit/lib/actions/clothing.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/unit/lib/supabase/client.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m tests/unit/lib/supabase/server.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m tests/unit/lib/supabase/middleware.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m14 passed[39m[22m[90m (14)[39m
+[2m      Tests [22m [1m[32m199 passed[39m[22m[90m (199)[39m
+[2m   Start at [22m 11:29:40
+[2m   Duration [22m 3.12s[2m (transform 1.60s, setup 1.60s, import 2.17s, tests 203ms, environment 12.61s)[22m
+
+[34m % [39m[2mCoverage report from [22m[33mv8[39m
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   97.78 |     92.7 |   97.01 |   99.35 |                   
+ ...alyze-clothing |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ ...enerate-outfit |   97.82 |      100 |      75 |     100 |                   
+  route.ts         |   97.82 |      100 |      75 |     100 |                   
+ app/api/weather   |     100 |      100 |     100 |     100 |                   
+  route.ts         |     100 |      100 |     100 |     100 |                   
+ lib               |   95.27 |    84.75 |   97.43 |   98.27 |                   
+  outfit-engine.ts |   94.06 |    80.46 |   97.14 |   97.93 | 250,278           
+  weather.ts       |     100 |      100 |     100 |     100 |                   
+ lib/actions       |   98.34 |    94.94 |     100 |    99.5 |                   
+  auth.ts          |     100 |      100 |     100 |     100 |                   
+  clothing.ts      |   91.89 |       90 |     100 |   96.77 | 34                
+  onboarding.ts    |    98.8 |    98.48 |     100 |     100 | 69                
+  outfit_logs.ts   |     100 |       90 |     100 |     100 | 61,64,86,125,143  
+ lib/validations   |     100 |      100 |     100 |     100 |                   
+  auth.ts          |     100 |      100 |     100 |     100 |                   
+-------------------|---------|----------|---------|---------|-------------------

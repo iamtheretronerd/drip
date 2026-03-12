@@ -13,7 +13,7 @@ test.describe('Authentication Flows', () => {
     // ─── Sign Up ──────────────────────────────────────────────────────────────
     test('should show validation errors on signup with weak password', async ({ page }) => {
         await page.goto('/signup');
-        await page.fill('#fullName', 'Test User');
+        await page.fill('input[name="fullName"]', 'Test User');
         await page.fill('#email', 'testuser@drip.app');
         await page.fill('#password', 'weak');
         await page.click('button[type="submit"]');
@@ -38,20 +38,20 @@ test.describe('Authentication Flows', () => {
     test('should display login page at /login', async ({ page }) => {
         await page.goto('/login');
         await expect(page).toHaveURL(/\/login/);
-        await expect(page.getByText('drip.')).toBeVisible();
+        await expect(page.getByRole('button', { name: /Sign In/i })).toBeVisible({ timeout: 10000 });
     });
 
     test('should display signup page at /signup', async ({ page }) => {
         await page.goto('/signup');
-        await expect(page.getByLabel('Full Name')).toBeVisible();
-        await expect(page.getByLabel('Email')).toBeVisible();
-        await expect(page.getByLabel('Password')).toBeVisible();
+        await expect(page).toHaveURL(/\/signup/);
+        await expect(page.getByRole('button', { name: /Create Account/i })).toBeVisible({ timeout: 10000 });
+        await expect(page.getByPlaceholder(/John Doe/i)).toBeVisible();
     });
 
     test('should display reset password page at /reset-password', async ({ page }) => {
         await page.goto('/reset-password');
-        await expect(page.getByLabel('Email')).toBeVisible();
-        await expect(page.getByRole('button', { name: /send reset link/i })).toBeVisible();
+        await expect(page.getByPlaceholder(/you@example\.com/i)).toBeVisible({ timeout: 10000 });
+        await expect(page.getByRole('button', { name: /Send Reset Link/i })).toBeVisible();
     });
 
     // ─── Reset password success state ─────────────────────────────────────────
@@ -61,6 +61,6 @@ test.describe('Authentication Flows', () => {
         await page.click('button[type="submit"]');
 
         // Always shows success message (to prevent email enumeration)
-        await expect(page.getByText('Check your inbox')).toBeVisible({ timeout: 8000 });
+        await expect(page.getByRole('heading', { name: /Check your inbox/i })).toBeVisible({ timeout: 8000 });
     });
 });

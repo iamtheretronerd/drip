@@ -9,7 +9,6 @@
 
 ## 1. Coverage Summary
 
-> _Paste the terminal output from `npm run test:coverage` here, or replace with a screenshot._
 
 ```text
  % Coverage report from v8
@@ -41,7 +40,6 @@ All files                    |   97.78 |    92.70 |   97.01 |   99.35 |
 
 ## 2. Test Results by File
 
-> _Paste the full `npm run test` terminal output here, or replace each section below with a screenshot._
 
 ### 2.1 Unit Tests — Validations & Utilities
 
@@ -93,7 +91,7 @@ These tests guarantee safe instantiation of Supabase clients across various Next
 | `app/api/generate-outfit.test.ts` | 12 | 12 | 0 | Gemini filtering, API failures, missing optional params |
 
 **What these tests cover:**  
-These API routes connect the application to major third party platforms (OpenWeather, Gemini) and the test suites specifically check resilient degradation against upstream network failures, hallucination parsing errors, and malformed queries. 
+These API routes connect the application to major third party platforms (OpenWeather, Gemini) and the test suites specifically check resilient degradation against upstream network failures, hallucination parsing errors, and malformed queries
 
 ---
 

@@ -113,8 +113,6 @@ npm run test:e2e   # terminal 2
 
 ## 3. Notable Test Cases
 
-> _Highlight 3-5 tests that demonstrate meaningful coverage of core logic. TAs look for this._
-
 | Test Name | File | What It Verifies |
 |-----------|------|-----------------|
 | `handles consecutive days when last worn was yesterday` | `lib/actions/outfit_logs.test.ts` | Verifies the date calculation logic correctly assigns consecutive wear counts when users supply historical target timestamps rather than today's system date. |
@@ -125,8 +123,6 @@ npm run test:e2e   # terminal 2
 ---
 
 ## 4. Known Failures & Explanation
-
-> _Be upfront — TAs respect honesty over pretending everything passes._
 
 | Test File | # Failing | Root Cause | Plan to Fix |
 |-----------|-----------|------------|-------------|
@@ -152,15 +148,11 @@ npm run test:e2e
 
 ---
 
-## 6. Screenshots (if applicable)
+## 6. Screenshots
 
-> _Paste screenshots of terminal output or coverage report here if you prefer visual evidence._
-
-````carousel
 ![Vitest Unit Test Dashboard](./assets/screenshots/vitest_dashboard.png)
-<!-- slide -->
+
 ![Playwright E2E Test Dashboard](./assets/screenshots/playwright_auth_dashboard.png)
-````
 
 ---
 

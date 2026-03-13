@@ -54,6 +54,8 @@ Here is a breakdown of the rubric requirements. Items marked with `[ ]` still ne
 - [x] **1500-word technical blog post & Social Post** - 
   * [Dev.to Blog Post](https://dev.to/hemang_murugan_a9b77a329a/building-drip-an-ai-powered-wardrobe-and-outfit-recommender-m11)
   * [Bluesky Social Post](https://bsky.app/profile/did:plc:zioureey5w4v54nlh33vduvv/post/3mgw6drsph22b)
+  * [Medium Blog Post](https://medium.com/@karyntaan/building-drip-an-ai-powered-wardrobe-and-outfit-recommender-b4dcdadc2692)
+  * [Bluesky Social Post #2](https://bsky.app/profile/karyntan.bsky.social/post/3mgxul2rojv2s)
   * Raw markdown backup inside `drip_app/docs/TECHNICAL_BLOG.md`.
 - [x] **Evidence of Team Participation** - Included inside `drip_app/docs/TEAM_CONTRIBUTIONS.md`.
 - [ ] **10-minute demo video** - Needs recording.

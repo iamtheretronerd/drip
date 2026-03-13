@@ -51,7 +51,10 @@ Here is a breakdown of the rubric requirements. Items marked with `[ ]` still ne
 - [x] **Sprint planning and retrospectives** - Included.
 - [x] **Reflections on how AI modalities were used** - Included.
 - [x] **Code documentation** - Handled contextually in `drip_app/docs/CODE_DOCUMENTATION.md` + structural typings.
-- [x] **1500-word technical blog post** - Created inside `drip_app/docs/TECHNICAL_BLOG.md`.
+- [x] **1500-word technical blog post & Social Post** - 
+  * [Dev.to Blog Post](https://dev.to/hemang_murugan_a9b77a329a/building-drip-an-ai-powered-wardrobe-and-outfit-recommender-m11)
+  * [Bluesky Social Post](https://bsky.app/profile/did:plc:zioureey5w4v54nlh33vduvv/post/3mgw6drsph22b)
+  * Raw markdown backup inside `drip_app/docs/TECHNICAL_BLOG.md`.
 - [x] **Evidence of Team Participation** - Included inside `drip_app/docs/TEAM_CONTRIBUTIONS.md`.
 - [ ] **10-minute demo video** - Needs recording.
 - [x] **Eval dashboard** - Built and confirms >90% coverage across statements, branches, functions, and lines.

@@ -1,0 +1,44 @@
+name: CI Evaluation Suite & Security Scan
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main", "staging" ]
+
+jobs:
+  quality-and-security:
+    name: Code Quality, Tests, and Security
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Code Quality Metrics (Linting & Typecheck)
+        run: |
+          npm run lint
+          npm run typecheck
+
+      - name: Run Automated Tests & Coverage
+        run: npm run test:coverage
+
+      - name: Baseline Security Scan (npm audit)
+        run: npm audit --audit-level=high
+
+      - name: Advanced Security Scan (Snyk)
+        uses: snyk/actions/node@master
+        continue-on-error: true # Allows pipeline to pass even if SNYK_TOKEN is missing for now
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high

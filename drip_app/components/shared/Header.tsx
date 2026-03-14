@@ -8,18 +8,18 @@ import type { Profile } from '@/types/database';
 import styles from './header.module.css';
 
 interface HeaderProps {
-    profile: Profile;
+  profile: Profile;
 }
 
 export function Header({ profile }: HeaderProps) {
-    const pathname = usePathname();
-    const userInitial = profile.full_name ? profile.full_name.charAt(0).toUpperCase() : (profile.email ? profile.email.charAt(0).toUpperCase() : 'U');
+  const pathname = usePathname();
+  const userInitial = profile.full_name ? profile.full_name.charAt(0).toUpperCase() : (profile.email ? profile.email.charAt(0).toUpperCase() : 'U');
 
-    const navLinks = [
-        { href: '/dashboard', label: 'Today', icon: Home },
-        { href: '/wardrobe', label: 'Wardrobe', icon: Shirt },
-        { href: '/history', label: 'History', icon: History },
-    ];
+  const navLinks = [
+    { href: '/dashboard', label: 'Today', icon: Home },
+    { href: '/wardrobe', label: 'Wardrobe', icon: Shirt },
+    { href: '/history', label: 'History', icon: History },
+  ];
 
   return (
     <header className={styles.header}>
@@ -39,19 +39,23 @@ export function Header({ profile }: HeaderProps) {
           ))}
         </nav>
 
-                <div className={styles.headerActions}>
-                    <div className={styles.userMenu}>
-                        <span className={styles.userName}>{profile.full_name || 'My Wardrobe'}</span>
-                        <div className={styles.userAvatar}>{userInitial}</div>
-                    </div>
+        <div className={styles.headerActions}>
+          <div className={styles.userMenu}>
+            <span className={styles.userName}>{profile.full_name || 'My Wardrobe'}</span>
+            <div className={styles.userAvatar}>{userInitial}</div>
+          </div>
 
-                    <form action={logout}>
-                        <button type="submit" className={styles.logoutButton}>
-                            <LogOut size={16} />
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </header>
-    );
+          <form action={async () => {
+            localStorage.removeItem('drip_weekly_outfits');
+            localStorage.removeItem('drip_current_outfit');
+            await logout();
+          }}>
+            <button type="submit" className={styles.logoutButton}>
+              <LogOut size={16} />
+            </button>
+          </form>
+        </div>
+      </div>
+    </header>
+  );
 }

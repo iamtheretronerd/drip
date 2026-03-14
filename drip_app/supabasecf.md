@@ -304,4 +304,4 @@ curl -X POST https://your-project.supabase.co/functions/v1/analyze-clothing \
 
 1. Deploy the function via Dashboard
 2. Test with sample images
-3. Monitor logs in Dashboard → Edge Functions → Logs
+3. Monitor logs in Dashboard → Edge Functions → Log

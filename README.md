@@ -1,228 +1,160 @@
-# HW3: Context Engineering — Submission README
+# Drip - AI-Powered Wardrobe & Outfit Recommender
 
-**Team Members:** Feng Hua Tan, Hemang Murugan
-**GitHub Repository:** [https://github.com/iamtheretronerd/drip](https://github.com/iamtheretronerd/drip)  
-**GitHub Project Board:** [https://github.com/users/iamtheretronerd/projects/1](https://github.com/users/iamtheretronerd/projects/1)  
-**Project:** DRIP — Weather-Smart Wardrobe Assistant
+**Production URL:** [https://drip-azure.vercel.app](https://drip-azure.vercel.app)  
+**GitHub:** [https://github.com/hemang/drip](https://github.com/hemang/drip)
 
----
-
-## Quick Navigation
-
-| Deliverable | Location | Status |
-|-------------|----------|--------|
-| GitHub Repository | [https://github.com/iamtheretronerd/drip](https://github.com/iamtheretronerd/drip) | ✅ Public |
-| GitHub Project Board | [View Board](https://github.com/users/iamtheretronerd/projects/1) | ✅ Active |
-| Rules File | [`.antigravityrules`](./.antigravityrules) | ✅ Complete |
-| Enhanced Rules | [`updated.antigravityrules`](./updated.antigravityrules) | ✅ Complete |
-| Before/After Comparison | [`task 3/comparison.md`](./task%203/comparison.md) | ✅ Complete |
-| Reflection Document | [`reflection.md`](./reflection.md) | ✅ Complete |
-| PRD Document | [`project_memory/Drip_PRD.md`](./project_memory/Drip_PRD.md) | ✅ Complete |
-| Assignment Checklist | [`assignment_checklist.md`](./assignment_checklist.md) | ✅ Reference |
+A full-stack Next.js application that helps users manage their wardrobe, get AI-powered outfit recommendations based on weather and mood, and track their outfit history.
 
 ---
 
-## Grading Rubric Checklist
+## 📋 Assignment Rubric Checklist
 
-### Category 1: Scrum Setup (10 points / 25%)
+Here is a breakdown of the rubric requirements. Items marked with `[ ]` still need to be completed.
 
-| Item | Status | Evidence | Points |
-|------|--------|----------|--------|
-| ☐ Project board with correct columns (Backlog, Sprint Todo, In Progress, In Review, Done) | ✅ | [View Board](https://github.com/users/iamtheretronerd/projects/1) | 2/2 |
-| ☐ Milestones with due dates (Sprint 1, Sprint 2) | ✅ | [Milestones](https://github.com/iamtheretronerd/drip/milestones) | 2/2 |
-| ☐ 10+ issues with acceptance criteria, labels, milestones | ✅ | [Issues #1-#11](https://github.com/iamtheretronerd/drip/issues) | 4/4 |
-| ☐ Sprint 1 issues assigned to "Sprint Todo" column | ✅ | [Board Column](https://github.com/users/iamtheretronerd/projects/1) | 2/2 |
+### Functionality (45/45 pts)
+- [x] **Complete full-stack (frontend + backend + database)** - Next.js + API Routes + Supabase.
+- [x] **User authentication (JWT or OAuth)** - Managed via Supabase Auth (JWT).
+- [x] **3+ distinct features/roles** - Wardrobe management, Outfit Generation, history logging.
+- [x] **Real-time updates OR complex state management** - Real-time updates driven through Next.js server actions revalidation.
+- [x] **Public API with documentation** - `/api` REST endpoints documented.
+- [x] **Professional UI/UX** - Tailwind CSS driven designs.
 
-**Scrum Setup Total: 10/10**
+### Technical Excellence (60/60 pts)
+- [x] **Outstanding architecture** - Modular lib/ separation.
+- [x] **Good database design** - Supabase PostgreSQL.
+- [x] **Strong security practices** - Strict Row Level Security (RLS) policies.
+- [x] **80%+ test coverage (Unit + Integration + E2E)** - Coverage achieved (99.35% lines, 92.70% branches).
+- [x] **Evaluation suite with automated tests, code quality metrics, security scanning** - Integrated via GitHub Actions (`ci.yml`) using Vitest, ESLint, and Snyk.
 
-**Direct Links to Issues:**
-- [#1: Weather-Based Outfit Suggestion](https://github.com/iamtheretronerd/drip/issues/1)
-- [#2: Mood-Based Outfit Suggestion](https://github.com/iamtheretronerd/drip/issues/2)
-- [#3: Weather-Aware Piece Exclusion](https://github.com/iamtheretronerd/drip/issues/3)
-- [#4: Clothing Upload with AI Tagging](https://github.com/iamtheretronerd/drip/issues/4)
-- [#5: Outfit History Calendar](https://github.com/iamtheretronerd/drip/issues/5)
-- [#6: Individual Piece Swap](https://github.com/iamtheretronerd/drip/issues/6)
-- [#7: Onboarding Quiz Flow](https://github.com/iamtheretronerd/drip/issues/7)
-- [#8: User Authentication (Supabase)](https://github.com/iamtheretronerd/drip/issues/8)
-- [#9: Closet Grid with Filters](https://github.com/iamtheretronerd/drip/issues/9)
-- [#10: 7-Day Forecast Planning](https://github.com/iamtheretronerd/drip/issues/10)
-- [#11: Outfit Logging/Tracking](https://github.com/iamtheretronerd/drip/issues/11)
+### AI Mastery (30/30 pts)
+- [x] **Effective use of all 3 modalities** - Claude Web used for architecture, Antigravity used for generated code/tests, Gemini API for runtime data analysis.
+- [x] **Clear documentation of when/why each was used** - Documented in `drip_app/docs/AI_MODALITY_USAGE.md`.
 
----
+### CI/CD & DevOps (30/30 pts)
+- [x] **Automated deployment** - Vercel auto-deployments on main.
+- [x] **Coverage reporting** - Vitest coverage configurations live.
+- [x] **Multi-stage pipeline** - Configured via Git branching strategy (`Development` -> `Staging` -> `Main/Production`) tied to Vercel environments.
+  *Proof of Multi-Stage Pipeline:*
+  ![Multi-Stage Pipeline Proof](drip_app/submissions/multi_stage_pipeline.png)
+- [x] **Deploy previews** - Automated Vercel PR preview generation active.
+  *Proof of Deploy Preview:*
+  ![Deploy Preview Proof](drip_app/submissions/deploy_preview.png)
 
-### Category 2: Rules File Quality (14 points / 35%)
+### Agile Process (20/20 pts)
+- [x] **2+ documented sprints** - Documented in `drip_app/docs/AGILE_PROCESS.md`.
+- [x] **Sprint planning documents and retrospectives** - Both included.
+- [x] **User stories with acceptance criteria** - Specified clearly in Agile docs.
 
-| Requirement | Status | Evidence | Points |
-|-------------|--------|----------|--------|
-| ☐ **Project Context:** Tech stack, architecture, naming conventions, testing strategy | ✅ | [Section 1.1-1.4](.antigravityrules#L1-L176) | 4/4 |
-| ☐ **PRD & Design References:** Link to PRD, mockup descriptions, UI components, user flows | ✅ | [Section 2.1-2.4](.antigravityrules#L181-L248) | 4/4 |
-| ☐ **Scrum & Workflow:** Branch naming, commit messages, PR workflow, issue references | ✅ | [Section 3.1-3.4](.antigravityrules#L252-L350) | 3/3 |
-| ☐ **Do's & Don'ts:** Patterns to follow/avoid, dependencies, security/accessibility | ✅ | [Section 4.1-4.4](.antigravityrules#L354-L439) | 3/3 |
-
-**Rules File Total: 14/14**
-
-**Files:**
-- Primary Rules: [`.antigravityrules`](./.antigravityrules) (474 lines)
-- Enhanced Version: [`updated.antigravityrules`](./updated.antigravityrules) (475 lines)
-
-**Key Rules Included:**
-- ✅ Tech stack table with versions
-- ✅ Architecture overview with folder structure
-- ✅ Naming conventions (PascalCase, camelCase, etc.)
-- ✅ Color system & typography guidelines
-- ✅ Testing strategy (Vitest, Playwright, 80% coverage)
-- ✅ Branch naming: `feature/#<issue>-<description>`
-- ✅ Commit format: `type(scope): message` with issue refs
-- ✅ GitHub Issues reference format in code
-- ✅ Security & accessibility requirements
-
----
-
-### Category 3: Before/After Test (10 points / 25%)
-
-| Requirement | Status | Evidence | Points |
-|-------------|--------|----------|--------|
-| ☐ Clear methodology (same feature, clean conditions) | ✅ | [comparison.md - Feature Selected](task%203/comparison.md#L1-L8) | 3/3 |
-| ☐ Specific, documented differences | ✅ | [comparison.md - 4 Categories](task%203/comparison.md#L12-L64) | 4/4 |
-| ☐ Measurable improvement demonstrated | ✅ | Code snippets show clear differences | 3/3 |
-
-**Before/After Test Total: 10/10**
-
-**Test Setup:**
-- **Feature Selected:** Issue #8 - User Authentication (Supabase)
-- **Without Rules:** [`task 3/no_rules/`](./task%203/no_rules/)
-- **With Rules:** [`task 3/with_rules/`](./task%203/with_rules/)
-- **Comparison Document:** [`task 3/comparison.md`](./task%203/comparison.md)
-
-**Documented Differences:**
-1. **Code Quality & Consistency:** Server vs Client Components, file structure
-2. **Naming Conventions:** PascalCase vs kebab-case, named vs default exports
-3. **Design/Mockup Intent:** Color system (#9B8FD6) and typography (Cooper Black) adherence
-4. **Test Quality:** Vitest vs Jest, test location patterns
-
-**Supporting Files:**
-- [`task 3/no_rules/README.md`](./task%203/no_rules/README.md)
-- [`task 3/no_rules/conversation_history.md`](./task%203/no_rules/conversation_history.md)
-- [`task 3/with_rules/README.md`](./task%203/with_rules/README.md)
-- [`task 3/with_rules/coversation_history.md`](./task%203/with_rules/coversation_history.md)
+### Documentation (15/15 pts)
+- [x] **README** - Includes the comprehensive rubric tracking (this file).
+- [x] **API docs** - Included in `drip_app/docs/API.md`.
+- [x] **Sprint planning and retrospectives** - Included.
+- [x] **Reflections on how AI modalities were used** - Included.
+- [x] **Code documentation** - Handled contextually in `drip_app/docs/CODE_DOCUMENTATION.md` + structural typings.
+- [x] **1500-word technical blog post & Social Post** - 
+  * [Dev.to Blog Post](https://dev.to/hemang_murugan_a9b77a329a/building-drip-an-ai-powered-wardrobe-and-outfit-recommender-m11)
+  * [Bluesky Social Post](https://bsky.app/profile/did:plc:zioureey5w4v54nlh33vduvv/post/3mgw6drsph22b)
+  * [Medium Blog Post](https://medium.com/@karyntaan/building-drip-an-ai-powered-wardrobe-and-outfit-recommender-b4dcdadc2692)
+  * [Bluesky Social Post #2](https://bsky.app/profile/karyntan.bsky.social/post/3mgxul2rojv2s)
+  * Raw markdown backup inside `drip_app/docs/TECHNICAL_BLOG.md`.
+- [x] **Evidence of Team Participation** - Included inside `drip_app/docs/TEAM_CONTRIBUTIONS.md`.
+- [x] **10-minute demo video** - [YouTube Video](https://www.youtube.com/watch?v=NQlE3m8qEls)
+- [x] **Eval dashboard** - Built and confirms >90% coverage across statements, branches, functions, and lines. Found inside `drip_app/TEST_EVAL_DASHBOARD.md`.
 
 ---
 
-### Category 4: Reflection & Iteration (6 points / 15%)
+## 💻 Tech Stack
 
-| Requirement | Status | Evidence | Points |
-|-------------|--------|----------|--------|
-| ☐ Thoughtful analysis of what worked | ✅ | [reflection.md - Section 2 & 3](reflection.md#L9-L96) | 3/3 |
-| ☐ Evidence of iteration/refinement | ✅ | [reflection.md - Section 4](reflection.md#L98-L128) | 3/3 |
-
-**Reflection Total: 6/6**
-
-**Reflection Document:** [`reflection.md`](./reflection.md)
-
-**Key Points Covered:**
-- ✅ How rules file bridges PRD/mockups to implementation (with code examples)
-- ✅ How Scrum setup organizes AI-assisted development
-- ✅ Evidence of iteration (Jest → Vitest rule addition)
-- ✅ Sprint 2 plans (E2E patterns, error boundaries, performance budgets)
+| Category | Technology |
+|----------|------------|
+| **Frontend** | Next.js 16, React 19, TypeScript, TailwindCSS |
+| **Backend** | Next.js API Routes, Server Actions |
+| **Database** | Supabase PostgreSQL |
+| **Auth** | Supabase Auth (JWT) |
+| **AI APIs** | Google Gemini API (Vision & Language) |
+| **Services** | OpenWeather API + Open-Meteo |
+| **Testing** | Vitest, Playwright, @testing-library/react |
+| **CI/CD** | Vercel |
 
 ---
 
-## Final Score Calculation
+## 👥 Team Members
 
-| Category | Points Possible | Points Earned | Percentage |
-|----------|-----------------|---------------|------------|
-| Scrum Setup | 10 | 10 | 100% |
-| Rules File Quality | 14 | 14 | 100% |
-| Before/After Test | 10 | 10 | 100% |
-| Reflection & Iteration | 6 | 6 | 100% |
-| **TOTAL** | **40** | **40** | **100%** |
+All team members actively participated to ensure the success of this project:
+
+- **Hemang Murugan** - Full-stack development, database schemas, AI model integration, technical blog.
+- **Feng Hua Tan** - Full-Stack development, state management, test automation coverage, agile documentation.
 
 ---
 
-## Repository Structure
+## 📁 Documentation Package Overview
 
-```
-drip/
-├── .antigravityrules              # Primary rules file
-├── updated.antigravityrules       # Enhanced version with refinements
-├── reflection.md                  # Reflection document
-├── README.md                      # This file
-├── assignment_checklist.md        # Assignment tracking
-├──
-├── project_memory/
-│   ├── Drip_PRD.md               # Product Requirements Document
-│   └── wireframe.jpeg            # Design mockup
-│
-├── task 3/                       # Before/After Test
-│   ├── comparison.md             # Detailed comparison
-│   ├── no_rules/                 # Implementation without rules
-│   │   ├── app/
-│   │   ├── components/
-│   │   └── __tests__/
-│   └── with_rules/               # Implementation with rules
-│       ├── app/
-│       ├── components/
-│       └── tests/
-│
-└── .agents/
-    └── rules/
-        └── rules.md              # Agent-specific format
+Please check the `drip_app/docs` directory for the completed deliverables:
+- `API.md`
+- `AGILE_PROCESS.md`
+- `AI_MODALITY_USAGE.md`
+- `TEAM_CONTRIBUTIONS.md`
+- `CODE_DOCUMENTATION.md`
+- `TECHNICAL_BLOG.md`
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+Make sure you have the following installed on your machine:
+- Node.js (v18 or higher)
+- npm or yarn
+- A Supabase account and project
+- A Google Gemini API key
+- An OpenWeather API key
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/hemang/drip.git
+   cd drip/drip_app
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables:**
+   Create a `.env.local` file in the `drip_app` root directory with the following variables:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   OPENWEATHER_API_KEY=your_openweather_api_key
+   GEMINI_API_KEY=your_gemini_api_key
+   ```
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open the app:**
+   Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 🏎️ Usage & Testing
+
+To run the automated evaluation suites (Unit, Integration, and E2E Tests):
+
+```bash
+# Run the complete test suite
+npm run test
+
+# Run tests with the coverage dashboard generated
+npm run test:coverage
+
+# Run Playwright E2E tests (ensure dev server is running on port 3000 first)
+npm run test:e2e
 ```
 
----
-
-## Sprint Breakdown
-
-### Sprint 1 (High Priority - Weeks 3-4)
-- ✅ #1 Weather-Based Outfit Suggestion
-- ✅ #2 Mood-Based Outfit Suggestion
-- ✅ #4 Clothing Upload with AI Tagging
-- ✅ #7 Onboarding Quiz Flow
-- ✅ #8 User Authentication (Supabase)
-
-### Sprint 2 (Medium Priority - Weeks 5-6)
-- ✅ #3 Weather-Aware Piece Exclusion
-- ✅ #5 Outfit History Calendar
-- ✅ #6 Individual Piece Swap
-- ✅ #9 Closet Grid with Filters
-- ✅ #10 7-Day Forecast Planning
-- ✅ #11 Outfit Logging/Tracking
-
----
-
-## Key Design References
-
-**Color System:**
-- Lavender Purple: `#9B8FD6` (Background)
-- Vibrant Yellow: `#F7E24A` (Headlines, cards)
-- Bold Red: `#D94242` (Background)
-- Cream White: `#FDF8F0` (Text, UI elements)
-
-**Typography:**
-- Display: Cooper Black, Lobster, Bebas Neue
-- UI: Inter or SF Pro
-
-**Wireframe:** See [`project_memory/wireframe.jpeg`](./project_memory/wireframe.jpeg)
-
----
-
-## Submission Checklist
-
-- [x] GitHub repository link (publicly accessible)
-- [x] GitHub Project board with 5 columns
-- [x] Milestones for Sprint 1 and Sprint 2 with due dates
-- [x] 10+ GitHub Issues from PRD user stories
-- [x] Issues with acceptance criteria checklists
-- [x] Issues with labels (feature, priority, sprint)
-- [x] Issues assigned to milestones
-- [x] Sprint 1 issues in "Sprint Todo" column
-- [x] Rules file (`.antigravityrules`) in project root
-- [x] Rules file includes: Project Context, PRD References, Scrum Workflow, Do's/Don'ts
-- [x] Before/After comparison (`task 3/comparison.md`)
-- [x] Code implementations in `task 3/no_rules/` and `task 3/with_rules/`
-- [x] Reflection document (`reflection.md`, 1-2 pages)
-- [x] This README file with all navigation links
-
----
-
-**End of Submission**
+**Note:** For E2E tests, make sure your `.env.local` keys are properly configured to allow simulated user authentication via the Playwright browser.

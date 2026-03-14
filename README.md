@@ -96,9 +96,6 @@ Please check the `drip_app/docs` directory for the completed deliverables:
 - `TEAM_CONTRIBUTIONS.md`
 - `CODE_DOCUMENTATION.md`
 - `TECHNICAL_BLOG.md`
-- `DEMO_VIDEO.md`
-
-*(Note: If a file isn't listed with an `x` in the checklist, it means we are still actively working on completing it.)*
 
 ---
 

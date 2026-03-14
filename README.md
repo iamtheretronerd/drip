@@ -59,7 +59,7 @@ Here is a breakdown of the rubric requirements. Items marked with `[ ]` still ne
   * Raw markdown backup inside `drip_app/docs/TECHNICAL_BLOG.md`.
 - [x] **Evidence of Team Participation** - Included inside `drip_app/docs/TEAM_CONTRIBUTIONS.md`.
 - [x] **10-minute demo video** - [YouTube Video](https://www.youtube.com/watch?v=NQlE3m8qEls)
-- [x] **Eval dashboard** - Built and confirms >90% coverage across statements, branches, functions, and lines.
+- [x] **Eval dashboard** - Built and confirms >90% coverage across statements, branches, functions, and lines. Found inside `drip_app/TEST_EVAL_DASHBOARD.md`.
 
 ---
 

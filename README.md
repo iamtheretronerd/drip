@@ -58,7 +58,7 @@ Here is a breakdown of the rubric requirements. Items marked with `[ ]` still ne
   * [Bluesky Social Post #2](https://bsky.app/profile/karyntan.bsky.social/post/3mgxul2rojv2s)
   * Raw markdown backup inside `drip_app/docs/TECHNICAL_BLOG.md`.
 - [x] **Evidence of Team Participation** - Included inside `drip_app/docs/TEAM_CONTRIBUTIONS.md`.
-- [ ] **10-minute demo video** - Needs recording.
+- [x] **10-minute demo video** - [YouTube Video](https://www.youtube.com/watch?v=NQlE3m8qEls))
 - [x] **Eval dashboard** - Built and confirms >90% coverage across statements, branches, functions, and lines.
 
 ---
